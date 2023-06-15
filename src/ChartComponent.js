@@ -290,7 +290,7 @@ const DynamicChart = ({ colors }) => {
  *
  * */
 const AreaChart = () => {
-  const data = [0, 145, 211, 301, 234, 290, 130, 110, 0];
+  const data = [0, 145, 211, 301, 234, 290, 130, 100, 0];
   //   const datazero = [145, 211, 301, 234, 290, 130, 110];
 
   const [options, setOptions] = useState({
