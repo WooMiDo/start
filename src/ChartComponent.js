@@ -8,15 +8,20 @@ import "./index.css";
  * */
 
 const LineChart = ({ colors }) => {
+  //x축 데이터
   const xdata = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+  //실제 데이터 (이름, 값)
   const data = [
     { name: "a", value: [150, 230, 224, 218, 135, 147, 260] },
     { name: "b", value: [160, 250, 21, 518, 95, 77, 210] },
     { name: "c", value: [100, 200, 101, 318, 195, 107, 210] },
     { name: "d", value: [10, 20, 11, 31, 15, 17, 20] },
+    { name: "e", value: [110, 60, 111, 91, 215, 117, 120] },
+    { name: "f", value: [30, 40, 91, 101, 115, 117, 200] },
   ];
 
+  //차트에 데이터값 출력
   const dataSeries = () => {
     return data.map((item) => ({
       name: item.name,
@@ -27,7 +32,9 @@ const LineChart = ({ colors }) => {
       symbolSize: 6,
     }));
   };
-  const [options, setOptions] = useState({
+
+  //차트 속성
+  const [options] = useState({
     color: colors,
     legend: {
       data: data.map((item) => item.name),
@@ -63,6 +70,7 @@ const LineChart = ({ colors }) => {
  * */
 
 const PieChart = ({ colors }) => {
+  //실제 데이터 (이름, 값)
   const data = [
     { value: 1048, name: "서울특별시" },
     { value: 735, name: "부산광역시" },
@@ -76,7 +84,7 @@ const PieChart = ({ colors }) => {
     { value: 100, name: "나머지 항목" },
   ];
 
-  const [options, setOptions] = useState({
+  const [options] = useState({
     tooltip: {
       trigger: "item",
       formatter: "{c}",
@@ -146,12 +154,13 @@ const PieChart = ({ colors }) => {
  * */
 
 const BarChart = ({ colors }) => {
+  //실제 데이터 (이름, 값)
   const data = [
     { value: 21, name: "Direct" },
     { value: 13, name: "Referral" },
   ];
 
-  const [options, setOptions] = useState({
+  const [options] = useState({
     yAxis: {
       type: "category",
       data: data.map((item) => item.name).reverse(),
@@ -188,8 +197,10 @@ const BarChart = ({ colors }) => {
  *
  * */
 const DynamicChart = ({ colors }) => {
+  //범례
   const category = ["Bardata", "Linedata"];
 
+  //x축 데이터
   const data = [
     "Jan",
     "Feb",
@@ -205,15 +216,17 @@ const DynamicChart = ({ colors }) => {
     "Dec",
   ];
 
+  //barchart로 출력될 데이터
   const bardata = [
     2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3,
   ];
 
+  //linechart로 출력될 데이터
   const linedata = [
     2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2,
   ];
 
-  const [options, setOptions] = useState({
+  const [options] = useState({
     color: colors,
     tooltip: {
       trigger: "axis",
@@ -290,10 +303,11 @@ const DynamicChart = ({ colors }) => {
  *
  * */
 const AreaChart = () => {
+  //실제 데이터
   const data = [0, 145, 211, 301, 234, 290, 130, 100, 0];
   //   const datazero = [145, 211, 301, 234, 290, 130, 110];
 
-  const [options, setOptions] = useState({
+  const [options] = useState({
     xAxis: {
       type: "category",
       boundaryGap: false,
@@ -325,6 +339,8 @@ const AreaChart = () => {
   );
 };
 
+//원하는 차트컴포넌트 출력
+//차트 컬러(순서)
 const ChartComponent = () => {
   const colors = [
     "#4180ec",
@@ -341,11 +357,11 @@ const ChartComponent = () => {
 
   return (
     <div>
-      <AreaChart />
       <LineChart colors={colors} />
-      <DynamicChart colors={colors} />
       <PieChart colors={colors} />
       <BarChart color={colors} />
+      <DynamicChart colors={colors} />
+      <AreaChart />
     </div>
   );
 };

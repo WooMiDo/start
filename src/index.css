@@ -1,18 +1,61 @@
+/**
+ ******************************* ChartComponent **********************************
+ *
+ * */
+
 .pieChartDiv {
   /* border: 1px solid #d9dadb; */
   float: left;
   width: 33%;
 }
 .pieChart {
-  margin: 20px;
   text-align: center;
 }
 
 .BarChartDiv {
   /* width: 50%; */
   margin: 20px;
+  display: inline-block;
 }
 
 .DynamicChart {
   margin: 20px;
+}
+
+/**
+ ******************************* DataGridComponent **********************************
+ *
+ * */
+
+.type1Div {
+  margin: 20px;
+  padding: 20px;
+}
+
+.type2Div {
+  margin: 20px;
+  padding: 20px;
+}
+
+.row .odd-row {
+  background-color: white;
+}
+
+.even-row {
+  background-color: rgba(239, 242, 247, 0.5);
+}
+
+.ant-table {
+  border: 1px solid #e4e7ea;
+}
+
+.type1Div .ant-table-wrapper .ant-table thead > tr > th {
+  border-bottom: 1px solid #000;
+  text-align: center;
+}
+
+.button {
+  background-color: white;
+  border: 1px solid #ccc;
+  margin: auto;
 }
