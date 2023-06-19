@@ -330,10 +330,10 @@ const Type2 = () => {
       ...prevParams,
       pagination: {
         ...prevParams.pagination,
-        total: sortedData.length, //정렬된 데이터 길이
+        total: sortedData.length,
       },
     }));
-  }, [tableParams.sorter]); //정렬옵션 변경할 때마다 실행
+  }, [tableParams]);
 
   const handleAdd = () => {};
 

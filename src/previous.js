@@ -296,7 +296,7 @@ const Type2 = () => {
     setTableParams({
       ...tableParams,
       pagination,
-      sorter,
+      sort: sorter,
     });
   };
 
@@ -304,7 +304,7 @@ const Type2 = () => {
     setLoading(true); //로딩상태 : true
 
     const sortedData = [...defaultdata]; //초기값 복사
-    const { field, order } = tableParams.sorter;
+    const { field, order } = tableParams.sort;
 
     //정렬
     if (field && order) {
@@ -330,10 +330,10 @@ const Type2 = () => {
       ...prevParams,
       pagination: {
         ...prevParams.pagination,
-        total: sortedData.length, //정렬된 데이터 길이
+        total: sortedData.length,
       },
     }));
-  }, [tableParams.sorter]); //정렬옵션 변경할 때마다 실행
+  }, [tableParams]);
 
   const handleAdd = () => {};
 
@@ -401,7 +401,6 @@ const Type2 = () => {
 
 const Type3 = () => {
   const columns = [
-    Table.SELECTION_COLUMN,
     {
       title: "키워드",
       dataIndex: "keyword",
@@ -409,15 +408,6 @@ const Type3 = () => {
     {
       title: "캠페인",
       dataIndex: "campaign",
-      colspan: 0,
-      className: "expaned-column",
-    },
-    Table.EXPAND_COLUMN,
-    {
-      title: "",
-      dataIndex: "",
-      colspan: 0,
-      className: "expaned-column",
     },
     {
       title: "노출수",
@@ -438,10 +428,11 @@ const Type3 = () => {
   ];
   //테이블 내 확장 테이블 데이터
   const data = [];
-  for (let i = 1; i <= 3; i++) {
+  for (let i = 1; i <= 5; i++) {
     data.push({
       key: i,
       keyword: "방수천",
+      campaign: "+",
       exposeNum: Number(`${i}2`),
       turnoverNum: Number(`${i}1`),
       sales: Number(`${i}`),
@@ -450,22 +441,35 @@ const Type3 = () => {
     });
   }
 
+  //2depth(row 펼침)
+  const defaultExpandable = {
+    expandedRowRender: (record) => <p>{record.description}</p>,
+  };
+
+  const [expandable] = useState(defaultExpandable);
+  const [rowSelection] = useState({});
+  const [selectedTab] = useState("1");
   const [hasData] = useState(true);
+
+  const tableColumns = columns.map((item) => ({
+    ...item,
+  }));
+  const tableProps = {
+    expandable: {
+      ...expandable,
+      expandedRowRender: (record) =>
+        selectedTab === "1" ? <SubTable /> : null,
+    },
+    rowSelection,
+  };
 
   return (
     <div className="type3Div">
       <Table
+        {...tableProps}
         pagination={true}
-        columns={columns}
+        columns={tableColumns}
         dataSource={hasData ? data : []}
-        rowSelection={{}}
-        expandable={{
-          expandedRowRender: (record) => (
-            <p style={{ margin: 0 }}>
-              <SubTable />
-            </p>
-          ),
-        }}
       />
     </div>
   );
