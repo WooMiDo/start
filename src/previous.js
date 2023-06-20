@@ -1,9 +1,10 @@
 import React from "react";
-import { Table, Button } from "antd";
+import { Table, Button, Input, Select } from "antd";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { utils as XLSXUtils, writeFile } from "xlsx";
+import "./index.css";
 
 /**
  ******************************* ScoreCard **********************************
@@ -40,8 +41,8 @@ const ScoreCard = () => {
  *
  * */
 
-//컬럼 명
 const Type1 = () => {
+  //컬럼 명
   const columns = [
     {
       title: "광고주",
@@ -296,7 +297,7 @@ const Type2 = () => {
     setTableParams({
       ...tableParams,
       pagination,
-      sort: sorter,
+      sorter,
     });
   };
 
@@ -304,7 +305,7 @@ const Type2 = () => {
     setLoading(true); //로딩상태 : true
 
     const sortedData = [...defaultdata]; //초기값 복사
-    const { field, order } = tableParams.sort;
+    const { field, order } = tableParams.sorter;
 
     //정렬
     if (field && order) {
@@ -330,10 +331,10 @@ const Type2 = () => {
       ...prevParams,
       pagination: {
         ...prevParams.pagination,
-        total: sortedData.length,
+        total: sortedData.length, //정렬된 데이터 길이
       },
     }));
-  }, [tableParams]);
+  }, [tableParams.sorter]); //정렬옵션 변경할 때마다 실행
 
   const handleAdd = () => {};
 
@@ -352,8 +353,8 @@ const Type2 = () => {
     );
     //시트를 워크북에 첨부
     XLSXUtils.book_append_sheet(workbook, worksheet, "Sheet1");
-    //워크북을 파일로 저장하여 audience_table이름으로 다운로드
-    writeFile(workbook, "audience_table.xlsx");
+    //워크북을 파일로 저장하여 지정된이름으로 다운로드
+    writeFile(workbook, "type2_table.xlsx");
   };
 
   return (
@@ -400,81 +401,221 @@ const Type2 = () => {
  * */
 
 const Type3 = () => {
+  //컬럼 명
   const columns = [
+    Table.SELECTION_COLUMN, //체크박스
     {
       title: "키워드",
       dataIndex: "keyword",
+      sorter: true,
     },
+    Table.EXPAND_COLUMN, //row펼침
     {
       title: "캠페인",
       dataIndex: "campaign",
+      className: "expanded-column",
+      align: "left",
     },
     {
       title: "노출수",
       dataIndex: "exposeNum",
+      sorter: true,
+      align: "right",
     },
     {
       title: "전환수",
       dataIndex: "turnoverNum",
+      sorter: true,
+      align: "right",
     },
     {
       title: "매출액",
       dataIndex: "sales",
+      sorter: true,
+      align: "right",
     },
     {
       title: "ROAS",
       dataIndex: "roas",
+      sorter: true,
+      align: "right",
     },
   ];
-  //테이블 내 확장 테이블 데이터
-  const data = [];
+  //실제 데이터
+  const defaultdata = [];
   for (let i = 1; i <= 5; i++) {
-    data.push({
+    defaultdata.push({
       key: i,
-      keyword: "방수천",
-      campaign: "+",
+      keyword: `방수천-${i}`,
       exposeNum: Number(`${i}2`),
       turnoverNum: Number(`${i}1`),
       sales: Number(`${i}`),
-      roas: Number(`${i}100000`),
+      roas: Number(`${i}10`),
       description: "초기값",
     });
   }
 
-  //2depth(row 펼침)
-  const defaultExpandable = {
-    expandedRowRender: (record) => <p>{record.description}</p>,
+  //총 합계 계산
+  const grandTotal = {
+    key: "total",
+    keyword: "총 합계",
+    exposeNum: defaultdata.reduce((total, item) => total + item.exposeNum, 0),
+    turnoverNum: defaultdata.reduce(
+      (total, item) => total + item.turnoverNum,
+      0
+    ),
+    sales: defaultdata.reduce((total, item) => total + item.sales, 0),
+    roas: defaultdata.reduce((total, item) => total + item.roas, 0),
+    className: "total-row",
   };
 
-  const [expandable] = useState(defaultExpandable);
-  const [rowSelection] = useState({});
-  const [selectedTab] = useState("1");
-  const [hasData] = useState(true);
-
-  const tableColumns = columns.map((item) => ({
-    ...item,
-  }));
-  const tableProps = {
-    expandable: {
-      ...expandable,
-      expandedRowRender: (record) =>
-        selectedTab === "1" ? <SubTable /> : null,
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false); //로딩 상태 : false(초기값)
+  //테이블 상태(현재 페이지:1, 페이지당 항목 수: 3)
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 3,
     },
-    rowSelection,
+    //정렬
+    sorter: {
+      field: "", //필드 (정렬할 항목)
+      order: "", //순서
+    },
+  });
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      ...tableParams,
+      pagination,
+      sorter,
+    });
   };
+
+  useEffect(() => {
+    setLoading(true); //로딩상태 : true
+
+    const sortedData = [...defaultdata]; //초기값 복사
+    const { field, order } = tableParams.sorter;
+
+    //정렬
+    if (field && order) {
+      sortedData.sort((a, b) => {
+        const aValue = a[field];
+        const bValue = b[field];
+
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          return order === "ascend"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        } else if (typeof aValue === "number" && typeof bValue === "number") {
+          return order === "ascend" ? aValue - bValue : bValue - aValue;
+        }
+
+        return 0;
+      });
+    }
+    setData(sortedData);
+    setLoading(false);
+    setTableParams((prevParams) => ({
+      ...prevParams,
+      pagination: {
+        ...prevParams.pagination,
+        total: sortedData.length, //정렬된 데이터 길이
+      },
+    }));
+  }, [tableParams.sorter]); //정렬옵션 변경할 때마다 실행
+
+  const { Search } = Input;
+
+  //총합행 클래스 이름 지정
+  const rowClassName = (record) => {
+    return record.key === "total" ? "total-row" : null;
+  };
+
+  //Excel 파일로 다운로드
+  const handleDownload = () => {
+    //새로운 workbook 생성
+    const workbook = XLSXUtils.book_new();
+    //테이블가져와서 시트로 반환
+    const worksheet = XLSXUtils.table_to_sheet(
+      document.getElementById("table")
+    );
+    //시트를 워크북에 첨부
+    XLSXUtils.book_append_sheet(workbook, worksheet, "Sheet1");
+    //워크북을 파일로 저장하여 지정된이름으로 다운로드
+    writeFile(workbook, "type3_table.xlsx");
+  };
+
+  const handleAdd = () => {};
+  const onSearch = (value) => console.log(value);
 
   return (
     <div className="type3Div">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
+        <div className="selectText">
+          <Select
+            defaultValue="10개씩 보기"
+            className="selectBox"
+            options={[
+              {
+                value: "10개씩 보기",
+                label: "10개씩 보기",
+              },
+              {
+                value: "20개씩 보기",
+                label: "20개씩 보기",
+              },
+              {
+                value: "50개씩 보기",
+                label: "50개씩 보기",
+              },
+            ]}
+          />
+          조회된 항목 수 : {data.length}
+        </div>
+        <div>
+          <Search
+            placeholder="검색"
+            onSearch={onSearch}
+            className="searchBtn"
+          />
+          <Button className="btn excelBtn" onClick={handleDownload}>
+            Excel
+          </Button>
+        </div>
+      </div>
       <Table
-        {...tableProps}
+        id="table"
         pagination={true}
-        columns={tableColumns}
-        dataSource={hasData ? data : []}
+        columns={columns}
+        dataSource={data ? [...data, grandTotal] : []}
+        // dataSource={data}
+        rowSelection={{}}
+        expandable={{
+          expandedRowRender: (record) => (
+            <p style={{ margin: 0 }}>
+              <SubTable />
+            </p>
+          ),
+          //total이 아닐 경우에만 expand실행
+          rowExpandable: (record) => record.key !== "total",
+        }}
+        loading={loading}
+        onChange={handleTableChange}
+        rowClassName={rowClassName}
       />
     </div>
   );
 };
 
+//확장 테이블 컴포넌트
 const SubTable = () => {
   const subTableColumns = [
     {
