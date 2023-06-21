@@ -61,6 +61,7 @@ const Type3 = () => {
     pagination: {
       current: 1,
       pageSize: 10,
+      total: 0,
     },
     //정렬
     sorter: {
@@ -69,19 +70,32 @@ const Type3 = () => {
     },
   });
 
-  const handleTableChange = (pagination, filters, sorter) => {
+  const handleTableChange = (pagination, _, sorter) => {
     setTableParams({
       ...tableParams,
       pagination,
       sorter,
     });
 
-    if (searchText) {
-      const startIndex = (pagination.current - 1) * pagination.pageSize;
-      const endIndex = startIndex + pagination.pageSize;
-      const slicedData = data.slice(startIndex, endIndex);
-      setData([...slicedData, grandTotal]);
-    }
+    // if (searchText) {
+    const startIndex = (pagination.current - 1) * pagination.pageSize;
+    const endIndex = startIndex + pagination.pageSize;
+    const slicedData = data.slice(startIndex, endIndex);
+
+    const updatedGrandTotal = {
+      key: "total",
+      keyword: "총 합계",
+      exposeNum: slicedData.reduce(
+        (total, item) => total + Number(item.exposeNum),
+        0
+      ),
+      roas: slicedData.reduce((total, item) => total + Number(item.roas), 0),
+      className: "total-row",
+    };
+    setData([...slicedData, updatedGrandTotal]);
+    console.log(updatedGrandTotal);
+    console.log(slicedData);
+    // }
   };
 
   useEffect(() => {
@@ -90,32 +104,64 @@ const Type3 = () => {
     const sortedData = [...defaultdata]; //초기값 복사
     const { field, order } = tableParams.sorter;
 
-    //정렬
-    if (field && order) {
-      sortedData.sort((a, b) => {
-        const aValue = a[field];
-        const bValue = b[field];
+    fetchData()
+      .then((result) => {
+        const { data, total } = result;
 
-        if (typeof aValue === "string" && typeof bValue === "string") {
-          return order === "ascend"
-            ? aValue.localeCompare(bValue, undefined, { numeric: true })
-            : bValue.localeCompare(aValue, undefined, { numeric: true });
-        } else if (typeof aValue === "number" && typeof bValue === "number") {
-          return order === "ascend" ? aValue - bValue : bValue - aValue;
+        //정렬
+        if (field && order) {
+          sortedData.sort((a, b) => {
+            const aValue = a[field];
+            const bValue = b[field];
+
+            if (typeof aValue === "string" && typeof bValue === "string") {
+              return order === "ascend"
+                ? aValue.localeCompare(bValue, undefined, { numeric: true })
+                : bValue.localeCompare(aValue, undefined, { numeric: true });
+            } else if (
+              typeof aValue === "number" &&
+              typeof bValue === "number"
+            ) {
+              return order === "ascend" ? aValue - bValue : bValue - aValue;
+            }
+            return 0;
+          });
         }
-        return 0;
-      });
-    }
 
-    setData(sortedData);
-    setLoading(false);
-    setTableParams((prevParams) => ({
-      ...prevParams,
-      pagination: {
-        ...prevParams.pagination,
-        total: sortedData.length, //정렬된 데이터 길이
-      },
-    }));
+        // setData(sortedData);
+        setLoading(false);
+        setTableParams((prevParams) => ({
+          ...prevParams,
+          pagination: {
+            ...prevParams.pagination,
+            total: sortedData.length, //정렬된 데이터 길이
+          },
+        }));
+
+        const updatedGrandTotal = {
+          key: "total",
+          keyword: "총 합계",
+          exposeNum: sortedData.reduce(
+            (total, item) => total + Number(item.exposeNum),
+            0
+          ),
+          roas: sortedData.reduce(
+            (total, item) => total + Number(item.roas),
+            0
+          ),
+          className: "total-row",
+        };
+
+        setGrandTotal(updatedGrandTotal);
+        setData([...sortedData, updatedGrandTotal]);
+      })
+      .catch((error) => {
+        // 데이터 가져오기 실패
+        console.error("Failed to fetch data:", error);
+      })
+      .finally(() => {
+        setLoading(false); // 로딩 상태를 false로 설정
+      });
   }, [tableParams.sorter]); //정렬옵션 변경할 때마다 실행
 
   const { Search } = Input;
@@ -145,7 +191,7 @@ const Type3 = () => {
       },
     }));
 
-    setGrandTotal({
+    const updatedGrandTotal = {
       key: "total",
       keyword: "총 합계",
       exposeNum: filteredData.reduce(
@@ -154,15 +200,17 @@ const Type3 = () => {
       ),
       roas: filteredData.reduce((total, item) => total + Number(item.roas), 0),
       className: "total-row",
-    });
+    };
 
-    setData(filteredData);
+    setGrandTotal(updatedGrandTotal);
+
+    setData([...filteredData, updatedGrandTotal]);
   };
 
   //pageSize 변경
   const handlePageSizeChange = (value) => {
     const totalItems = defaultdata.length + 1;
-    const pageSize = value === 40 ? totalItems : value;
+    const pageSize = value === 40 ? totalItems + 1 : value;
 
     setTableParams((prevParams) => ({
       ...prevParams,
@@ -171,18 +219,6 @@ const Type3 = () => {
         pageSize: pageSize,
       },
     }));
-  };
-
-  const makedata = (data) => {
-    let sliceNum = tableParams.pagination.pageSize;
-    let currentP = tableParams.pagination.current;
-    let newData = [
-      ...data.slice((currentP - 1) * 10, sliceNum - 1),
-      grandTotal,
-    ];
-    console.log(tableParams.pagination);
-    console.log(data);
-    return newData;
   };
 
   return (
@@ -206,7 +242,7 @@ const Type3 = () => {
             ]}
             onChange={handlePageSizeChange}
           />
-          조회된 항목 수 : {data.length}
+          조회된 항목 수 : {data.length - 1}
         </div>
         <div>
           <Search
@@ -221,7 +257,7 @@ const Type3 = () => {
         pagination={tableParams.pagination}
         columns={columns}
         // dataSource={data ? [...data, grandTotal] : []}
-        dataSource={makedata(data, tableParams.pagination)}
+        dataSource={data}
         rowSelection={{
           getCheckboxProps: (record) => ({
             disabled: record.key === "total",

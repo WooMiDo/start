@@ -80,7 +80,7 @@ const Type3 = () => {
       const startIndex = (pagination.current - 1) * pagination.pageSize;
       const endIndex = startIndex + pagination.pageSize;
       const slicedData = data.slice(startIndex, endIndex);
-      setData([...slicedData, grandTotal]);
+      setData(slicedData);
     }
   };
 
@@ -173,18 +173,6 @@ const Type3 = () => {
     }));
   };
 
-  const makedata = (data) => {
-    let sliceNum = tableParams.pagination.pageSize;
-    let currentP = tableParams.pagination.current;
-    let newData = [
-      ...data.slice((currentP - 1) * 10, sliceNum - 1),
-      grandTotal,
-    ];
-    console.log(tableParams.pagination);
-    console.log(data);
-    return newData;
-  };
-
   return (
     <div className="type3Div">
       <div
@@ -220,8 +208,7 @@ const Type3 = () => {
         id="table"
         pagination={tableParams.pagination}
         columns={columns}
-        // dataSource={data ? [...data, grandTotal] : []}
-        dataSource={makedata(data, tableParams.pagination)}
+        dataSource={data ? [...data, grandTotal] : []}
         rowSelection={{
           getCheckboxProps: (record) => ({
             disabled: record.key === "total",

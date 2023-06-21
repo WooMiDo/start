@@ -315,8 +315,8 @@ const Type2 = () => {
 
         if (typeof aValue === "string" && typeof bValue === "string") {
           return order === "ascend"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
+            ? aValue.localeCompare(bValue, undefined, { numeric: true })
+            : bValue.localeCompare(aValue, undefined, { numeric: true });
         } else if (typeof aValue === "number" && typeof bValue === "number") {
           return order === "ascend" ? aValue - bValue : bValue - aValue;
         }
@@ -443,31 +443,34 @@ const Type3 = () => {
   ];
   //실제 데이터
   const defaultdata = [];
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 19; i++) {
     defaultdata.push({
       key: i,
       keyword: `방수천-${i}`,
-      exposeNum: Number(`${i}2`),
-      turnoverNum: Number(`${i}1`),
-      sales: Number(`${i}`),
-      roas: Number(`${i}10`),
+      exposeNum: `${i}2`,
+      turnoverNum: `${i}1`,
+      sales: `${i}`,
+      roas: `${i}10`,
       description: "초기값",
     });
   }
 
   //총 합계 계산
-  const grandTotal = {
+  const [grandTotal, setGrandTotal] = useState({
     key: "total",
     keyword: "총 합계",
-    exposeNum: defaultdata.reduce((total, item) => total + item.exposeNum, 0),
-    turnoverNum: defaultdata.reduce(
-      (total, item) => total + item.turnoverNum,
+    exposeNum: defaultdata.reduce(
+      (total, item) => total + Number(item.exposeNum),
       0
     ),
-    sales: defaultdata.reduce((total, item) => total + item.sales, 0),
-    roas: defaultdata.reduce((total, item) => total + item.roas, 0),
+    turnoverNum: defaultdata.reduce(
+      (total, item) => total + Number(item.turnoverNum),
+      0
+    ),
+    sales: defaultdata.reduce((total, item) => total + Number(item.sales), 0),
+    roas: defaultdata.reduce((total, item) => total + Number(item.roas), 0),
     className: "total-row",
-  };
+  });
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false); //로딩 상태 : false(초기값)
@@ -475,7 +478,7 @@ const Type3 = () => {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 3,
+      pageSize: 10,
     },
     //정렬
     sorter: {
@@ -484,6 +487,7 @@ const Type3 = () => {
     },
   });
 
+  //테이블 변경시 페이징 처리 다시 설정
   const handleTableChange = (pagination, filters, sorter) => {
     setTableParams({
       ...tableParams,
@@ -498,7 +502,7 @@ const Type3 = () => {
     const sortedData = [...defaultdata]; //초기값 복사
     const { field, order } = tableParams.sorter;
 
-    //정렬
+    //정렬(문자도 숫자형으로 정렬할수있도록 설정)
     if (field && order) {
       sortedData.sort((a, b) => {
         const aValue = a[field];
@@ -506,15 +510,15 @@ const Type3 = () => {
 
         if (typeof aValue === "string" && typeof bValue === "string") {
           return order === "ascend"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
+            ? aValue.localeCompare(bValue, undefined, { numeric: true })
+            : bValue.localeCompare(aValue, undefined, { numeric: true });
         } else if (typeof aValue === "number" && typeof bValue === "number") {
           return order === "ascend" ? aValue - bValue : bValue - aValue;
         }
-
         return 0;
       });
     }
+
     setData(sortedData);
     setLoading(false);
     setTableParams((prevParams) => ({
@@ -527,6 +531,7 @@ const Type3 = () => {
   }, [tableParams.sorter]); //정렬옵션 변경할 때마다 실행
 
   const { Search } = Input;
+  const [searchText, setSearchText] = useState("");
 
   //총합행 클래스 이름 지정
   const rowClassName = (record) => {
@@ -547,8 +552,58 @@ const Type3 = () => {
     writeFile(workbook, "type3_table.xlsx");
   };
 
-  const handleAdd = () => {};
-  const onSearch = (value) => console.log(value);
+  //검색기능
+  const onSearch = (value) => {
+    setSearchText(value);
+    const filteredData = defaultdata.filter((item) => {
+      const itemValues = Object.values(item); //item개체에 있는 모든 값의 배열
+      return itemValues.some((itemValue) =>
+        itemValue.toString().toLowerCase().includes(value.toLowerCase())
+      );
+    });
+    setTableParams((prevParams) => ({
+      ...prevParams,
+      pagination: {
+        ...prevParams.pagination,
+        current: 1,
+        total: filteredData.length,
+      },
+    }));
+
+    setGrandTotal({
+      key: "total",
+      keyword: "총 합계",
+      exposeNum: filteredData.reduce(
+        (total, item) => total + Number(item.exposeNum),
+        0
+      ),
+      turnoverNum: filteredData.reduce(
+        (total, item) => total + Number(item.turnoverNum),
+        0
+      ),
+      sales: filteredData.reduce(
+        (total, item) => total + Number(item.sales),
+        0
+      ),
+      roas: filteredData.reduce((total, item) => total + Number(item.roas), 0),
+      className: "total-row",
+    });
+    setData(filteredData);
+  };
+
+  //pageSize 변경
+  const handlePageSizeChange = (value) => {
+    const totalItems = defaultdata.length;
+    const pageSize = value === 40 ? totalItems + 1 : value;
+
+    setTableParams((prevParams) => ({
+      ...prevParams,
+      pagination: {
+        ...prevParams.pagination,
+        pageSize: pageSize,
+      },
+    }));
+  };
 
   return (
     <div className="type3Div">
@@ -561,22 +616,15 @@ const Type3 = () => {
       >
         <div className="selectText">
           <Select
-            defaultValue="10개씩 보기"
+            defaultValue={{ value: 10, label: "10개씩 보기" }}
             className="selectBox"
             options={[
-              {
-                value: "10개씩 보기",
-                label: "10개씩 보기",
-              },
-              {
-                value: "20개씩 보기",
-                label: "20개씩 보기",
-              },
-              {
-                value: "50개씩 보기",
-                label: "50개씩 보기",
-              },
+              { value: 10, label: "10개씩 보기" },
+              { value: 20, label: "20개씩 보기" },
+              { value: 30, label: "30개씩 보기" },
+              { value: 40, label: "전체 보기" },
             ]}
+            onChange={handlePageSizeChange}
           />
           조회된 항목 수 : {data.length}
         </div>
@@ -593,11 +641,14 @@ const Type3 = () => {
       </div>
       <Table
         id="table"
-        pagination={true}
+        pagination={tableParams.pagination}
         columns={columns}
         dataSource={data ? [...data, grandTotal] : []}
-        // dataSource={data}
-        rowSelection={{}}
+        rowSelection={{
+          getCheckboxProps: (record) => ({
+            disabled: record.key === "total",
+          }),
+        }}
         expandable={{
           expandedRowRender: (record) => (
             <p style={{ margin: 0 }}>
