@@ -443,7 +443,7 @@ const Type3 = () => {
   ];
   //실제 데이터
   const defaultdata = [];
-  for (let i = 1; i <= 19; i++) {
+  for (let i = 1; i <= 22; i++) {
     defaultdata.push({
       key: i,
       keyword: `방수천-${i}`,
@@ -455,20 +455,14 @@ const Type3 = () => {
     });
   }
 
-  //총 합계 계산
+  //총 합계 default
   const [grandTotal, setGrandTotal] = useState({
     key: "total",
     keyword: "총 합계",
-    exposeNum: defaultdata.reduce(
-      (total, item) => total + Number(item.exposeNum),
-      0
-    ),
-    turnoverNum: defaultdata.reduce(
-      (total, item) => total + Number(item.turnoverNum),
-      0
-    ),
-    sales: defaultdata.reduce((total, item) => total + Number(item.sales), 0),
-    roas: defaultdata.reduce((total, item) => total + Number(item.roas), 0),
+    exposeNum: 0,
+    turnoverNum: 0,
+    sales: 0,
+    roas: 0,
     className: "total-row",
   });
 
@@ -478,7 +472,7 @@ const Type3 = () => {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 10,
+      pageSize: 11,
     },
     //정렬
     sorter: {
@@ -488,7 +482,7 @@ const Type3 = () => {
   });
 
   //테이블 변경시 페이징 처리 다시 설정
-  const handleTableChange = (pagination, filters, sorter) => {
+  const handleTableChange = (pagination, _, sorter) => {
     setTableParams({
       ...tableParams,
       pagination,
@@ -519,8 +513,6 @@ const Type3 = () => {
       });
     }
 
-    setData(sortedData);
-    setLoading(false);
     setTableParams((prevParams) => ({
       ...prevParams,
       pagination: {
@@ -528,7 +520,32 @@ const Type3 = () => {
         total: sortedData.length, //정렬된 데이터 길이
       },
     }));
-  }, [tableParams.sorter]); //정렬옵션 변경할 때마다 실행
+
+    const pagination = tableParams.pagination;
+    const startIndex = (pagination.current - 1) * (pagination.pageSize - 1);
+    const endIndex = startIndex + pagination.pageSize - 1;
+    const slicedData = sortedData.slice(startIndex, endIndex);
+
+    const updatedGrandTotal = {
+      key: "total",
+      keyword: "총 합계",
+      exposeNum: slicedData.reduce(
+        (total, item) => total + Number(item.exposeNum),
+        0
+      ),
+      turnoverNum: slicedData.reduce(
+        (total, item) => total + Number(item.turnoverNum),
+        0
+      ),
+      sales: slicedData.reduce((total, item) => total + Number(item.sales), 0),
+      roas: slicedData.reduce((total, item) => total + Number(item.roas), 0),
+      className: "total-row",
+    };
+
+    setGrandTotal(updatedGrandTotal);
+    setData([...slicedData, updatedGrandTotal]);
+    setLoading(false);
+  }, [tableParams.sorter, tableParams.pagination.pageSize]); //정렬옵션 변경할 때마다 실행
 
   const { Search } = Input;
   const [searchText, setSearchText] = useState("");
@@ -570,31 +587,35 @@ const Type3 = () => {
       },
     }));
 
-    setGrandTotal({
+    const pagination = tableParams.pagination;
+    const startIndex = (pagination.current - 1) * (pagination.pageSize - 1);
+    const endIndex = startIndex + pagination.pageSize - 1;
+    const slicedData = filteredData.slice(startIndex, endIndex);
+
+    const updatedGrandTotal = {
       key: "total",
       keyword: "총 합계",
-      exposeNum: filteredData.reduce(
+      exposeNum: slicedData.reduce(
         (total, item) => total + Number(item.exposeNum),
         0
       ),
-      turnoverNum: filteredData.reduce(
+      turnoverNum: slicedData.reduce(
         (total, item) => total + Number(item.turnoverNum),
         0
       ),
-      sales: filteredData.reduce(
-        (total, item) => total + Number(item.sales),
-        0
-      ),
-      roas: filteredData.reduce((total, item) => total + Number(item.roas), 0),
+      sales: slicedData.reduce((total, item) => total + Number(item.sales), 0),
+      roas: slicedData.reduce((total, item) => total + Number(item.roas), 0),
       className: "total-row",
-    });
-    setData(filteredData);
+    };
+    setGrandTotal(updatedGrandTotal);
+
+    setData([...slicedData, updatedGrandTotal]);
   };
 
   //pageSize 변경
   const handlePageSizeChange = (value) => {
     const totalItems = defaultdata.length;
-    const pageSize = value === 40 ? totalItems + 1 : value;
+    const pageSize = value === 40 ? totalItems + 1 : value + 1;
 
     setTableParams((prevParams) => ({
       ...prevParams,
@@ -603,6 +624,11 @@ const Type3 = () => {
         pageSize: pageSize,
       },
     }));
+  };
+
+  //조회된 항목 수
+  const itemLength = () => {
+    return searchText ? data.length - 1 : defaultdata.length;
   };
 
   return (
@@ -626,7 +652,7 @@ const Type3 = () => {
             ]}
             onChange={handlePageSizeChange}
           />
-          조회된 항목 수 : {data.length}
+          조회된 항목 수 : {itemLength()}
         </div>
         <div>
           <Search
@@ -643,7 +669,7 @@ const Type3 = () => {
         id="table"
         pagination={tableParams.pagination}
         columns={columns}
-        dataSource={data ? [...data, grandTotal] : []}
+        dataSource={data}
         rowSelection={{
           getCheckboxProps: (record) => ({
             disabled: record.key === "total",

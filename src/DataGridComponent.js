@@ -9,7 +9,6 @@ import "./index.css";
  * */
 
 const Type3 = () => {
-  //컬럼 명
   const columns = [
     Table.SELECTION_COLUMN, //체크박스
     {
@@ -30,9 +29,8 @@ const Type3 = () => {
       align: "right",
     },
   ];
-  //실제 데이터
   const defaultdata = [];
-  for (let i = 1; i <= 19; i++) {
+  for (let i = 1; i <= 12; i++) {
     defaultdata.push({
       key: i,
       keyword: `방수천-${i}`,
@@ -42,28 +40,22 @@ const Type3 = () => {
     });
   }
 
-  //총 합계 계산
+  //총 합계 default
   const [grandTotal, setGrandTotal] = useState({
     key: "total",
     keyword: "총 합계",
-    exposeNum: defaultdata.reduce(
-      (total, item) => total + Number(item.exposeNum),
-      0
-    ),
-    roas: defaultdata.reduce((total, item) => total + Number(item.roas), 0),
+    exposeNum: 0,
+    roas: 0,
     className: "total-row",
   });
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false); //로딩 상태 : false(초기값)
-  //테이블 상태(현재 페이지:1, 페이지당 항목 수: 3)
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 10,
-      total: 0,
+      pageSize: 11,
     },
-    //정렬
     sorter: {
       field: "", //필드 (정렬할 항목)
       order: "", //순서
@@ -74,28 +66,9 @@ const Type3 = () => {
     setTableParams({
       ...tableParams,
       pagination,
+      ...pagination,
       sorter,
     });
-
-    // if (searchText) {
-    const startIndex = (pagination.current - 1) * pagination.pageSize;
-    const endIndex = startIndex + pagination.pageSize;
-    const slicedData = data.slice(startIndex, endIndex);
-
-    const updatedGrandTotal = {
-      key: "total",
-      keyword: "총 합계",
-      exposeNum: slicedData.reduce(
-        (total, item) => total + Number(item.exposeNum),
-        0
-      ),
-      roas: slicedData.reduce((total, item) => total + Number(item.roas), 0),
-      className: "total-row",
-    };
-    setData([...slicedData, updatedGrandTotal]);
-    console.log(updatedGrandTotal);
-    console.log(slicedData);
-    // }
   };
 
   useEffect(() => {
@@ -121,8 +94,6 @@ const Type3 = () => {
       });
     }
 
-    // setData(sortedData);
-    setLoading(false);
     setTableParams((prevParams) => ({
       ...prevParams,
       pagination: {
@@ -131,21 +102,29 @@ const Type3 = () => {
       },
     }));
 
+    const pagination = tableParams.pagination;
+
+    const startIndex = (pagination.current - 1) * (pagination.pageSize - 1);
+    const endIndex = startIndex + pagination.pageSize - 1;
+    const slicedData = sortedData.slice(startIndex, endIndex);
+
     const updatedGrandTotal = {
       key: "total",
       keyword: "총 합계",
-      exposeNum: sortedData.reduce(
+      exposeNum: slicedData.reduce(
         (total, item) => total + Number(item.exposeNum),
         0
       ),
-      roas: sortedData.reduce((total, item) => total + Number(item.roas), 0),
+      roas: slicedData.reduce((total, item) => total + Number(item.roas), 0),
       className: "total-row",
     };
 
     setGrandTotal(updatedGrandTotal);
-    setData([...sortedData, updatedGrandTotal]);
+    setData([...slicedData, updatedGrandTotal]);
+    setLoading(false);
   }, [tableParams.sorter, tableParams.pagination.pageSize]); //정렬옵션 변경할 때마다 실행
 
+  console.log("data=", { data });
   const { Search } = Input;
   const [searchText, setSearchText] = useState("");
 
@@ -173,26 +152,31 @@ const Type3 = () => {
       },
     }));
 
+    const pagination = tableParams.pagination;
+    const startIndex = (pagination.current - 1) * (pagination.pageSize - 1);
+    const endIndex = startIndex + pagination.pageSize - 1;
+    const slicedData = filteredData.slice(startIndex, endIndex);
+
     const updatedGrandTotal = {
       key: "total",
       keyword: "총 합계",
-      exposeNum: filteredData.reduce(
+      exposeNum: slicedData.reduce(
         (total, item) => total + Number(item.exposeNum),
         0
       ),
-      roas: filteredData.reduce((total, item) => total + Number(item.roas), 0),
+      roas: slicedData.reduce((total, item) => total + Number(item.roas), 0),
       className: "total-row",
     };
 
     setGrandTotal(updatedGrandTotal);
 
-    setData([...filteredData, updatedGrandTotal]);
+    setData([...slicedData, updatedGrandTotal]);
   };
 
   //pageSize 변경
   const handlePageSizeChange = (value) => {
-    const totalItems = defaultdata.length + 1;
-    const pageSize = value === 40 ? totalItems + 1 : value;
+    const totalItems = defaultdata.length;
+    const pageSize = value === 40 ? totalItems + 1 : value + 1;
 
     setTableParams((prevParams) => ({
       ...prevParams,
@@ -203,15 +187,14 @@ const Type3 = () => {
     }));
   };
 
+  //조회된 항목 수
+  const itemLength = () => {
+    return searchText ? data.length - 1 : defaultdata.length;
+  };
+
   return (
     <div className="type3Div">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 16,
-        }}
-      >
+      <div>
         <div className="selectText">
           <Select
             defaultValue={{ value: 10, label: "10개씩 보기" }}
@@ -224,7 +207,7 @@ const Type3 = () => {
             ]}
             onChange={handlePageSizeChange}
           />
-          조회된 항목 수 : {data.length - 1}
+          조회된 항목 수 : {itemLength()}
         </div>
         <div>
           <Search
