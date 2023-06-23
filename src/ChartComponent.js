@@ -3,6 +3,11 @@ import ECharts, { EChartsReactProps } from "echarts-for-react";
 import "./index.css";
 
 /**
+ ******************************* FilterChart **********************************
+ *
+ * */
+
+/**
  ******************************* LineChart **********************************
  *
  * */
@@ -81,8 +86,19 @@ const PieChart = ({ colors }) => {
     { value: 921, name: "충청남도" },
     { value: 513, name: "대전광역시" },
     { value: 666, name: "충청북도" },
-    { value: 100, name: "나머지 항목" },
+    { value: 100, name: "기타" },
   ];
+
+  //data이름이 기타일 경우 지정색 고정
+  const ColoredData = data.map((item) => ({
+    ...item,
+    itemStyle: {
+      color:
+        item.name === "기타"
+          ? "#bababa"
+          : colors[data.findIndex((d) => d.name === item.name)],
+    },
+  }));
 
   const [options] = useState({
     tooltip: {
@@ -104,8 +120,6 @@ const PieChart = ({ colors }) => {
         fontSize: 10,
       },
     },
-    color: colors,
-
     series: [
       {
         name: "Access From",
@@ -120,7 +134,7 @@ const PieChart = ({ colors }) => {
           fontSize: 9,
         },
         labelLine: { show: false },
-        data: data,
+        data: ColoredData,
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
@@ -339,8 +353,7 @@ const AreaChart = () => {
   );
 };
 
-//원하는 차트컴포넌트 출력
-//차트 컬러(순서)
+//차트 컬러(순서고정, max 10)
 const ChartComponent = () => {
   const colors = [
     "#4180ec",
@@ -353,8 +366,9 @@ const ChartComponent = () => {
     "#b5cf14",
     "#eaab2f",
     "#bababa",
-  ];
+  ].slice(0, 10);
 
+  //원하는 차트컴포넌트 출력
   return (
     <div>
       <LineChart colors={colors} />

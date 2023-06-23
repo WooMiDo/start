@@ -1,16 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Input, Select } from "antd";
-import { useEffect, useState } from "react";
 import "./index.css";
-
-/**
- ******************************* Type3 **********************************
- *
- * */
 
 const Type3 = () => {
   const columns = [
-    Table.SELECTION_COLUMN, //체크박스
+    Table.SELECTION_COLUMN, // 체크박스
     {
       title: "키워드",
       dataIndex: "keyword",
@@ -30,7 +24,7 @@ const Type3 = () => {
     },
   ];
   const defaultdata = [];
-  for (let i = 1; i <= 30; i++) {
+  for (let i = 1; i <= 11; i++) {
     defaultdata.push({
       key: i,
       keyword: `방수천-${i}`,
@@ -40,7 +34,7 @@ const Type3 = () => {
     });
   }
 
-  //총 합계 default
+  // 총 합계 default
   const [grandTotal, setGrandTotal] = useState({
     key: "total",
     keyword: "총 합계",
@@ -50,15 +44,15 @@ const Type3 = () => {
   });
 
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false); //로딩 상태 : false(초기값)
+  const [loading, setLoading] = useState(false); // 로딩 상태: false(초기값)
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 11,
+      pageSize: 10,
     },
     sorter: {
-      field: "", //필드 (정렬할 항목)
-      order: "", //순서
+      field: "", // 필드 (정렬할 항목)
+      order: "", // 순서
     },
   });
 
@@ -66,17 +60,18 @@ const Type3 = () => {
     setTableParams({
       ...tableParams,
       pagination,
+      ...pagination,
       sorter,
     });
   };
 
   useEffect(() => {
-    setLoading(true); //로딩상태 : true
+    setLoading(true); // 로딩 상태: true
 
-    const sortedData = [...defaultdata]; //초기값 복사
+    const sortedData = [...defaultdata]; // 초기값 복사
     const { field, order } = tableParams.sorter;
 
-    //정렬
+    // 정렬
     if (field && order) {
       sortedData.sort((a, b) => {
         const aValue = a[field];
@@ -97,13 +92,14 @@ const Type3 = () => {
       ...prevParams,
       pagination: {
         ...prevParams.pagination,
-        total: sortedData.length, //정렬된 데이터 길이
+        total: sortedData.length, // 정렬된 데이터 길이
       },
     }));
 
     const pagination = tableParams.pagination;
-    const startIndex = (pagination.current - 1) * (pagination.pageSize - 1);
-    const endIndex = startIndex + pagination.pageSize - 1;
+
+    const startIndex = (pagination.current - 1) * pagination.pageSize;
+    const endIndex = startIndex + pagination.pageSize;
     const slicedData = sortedData.slice(startIndex, endIndex);
 
     const updatedGrandTotal = {
@@ -118,24 +114,23 @@ const Type3 = () => {
     };
 
     setGrandTotal(updatedGrandTotal);
-    setData([...slicedData, updatedGrandTotal]);
-    console.log("data=", slicedData);
+    setData(slicedData);
     setLoading(false);
-  }, [tableParams.sorter, tableParams.pagination.pageSize]); //정렬옵션 변경할 때마다 실행
+  }, [tableParams.sorter, tableParams.pagination.pageSize]); // 정렬옵션 변경할 때마다 실행
 
   const { Search } = Input;
   const [searchText, setSearchText] = useState("");
 
-  //총합행 클래스 이름 지정
+  // 총합행 클래스 이름 지정
   const rowClassName = (record) => {
     return record.key === "total" ? "total-row" : null;
   };
 
-  //검색기능
+  // 검색기능
   const onSearch = (value) => {
     setSearchText(value);
     const filteredData = defaultdata.filter((item) => {
-      const itemValues = Object.values(item); //item개체에 있는 모든 값의 배열
+      const itemValues = Object.values(item); // item 개체에 있는 모든 값의 배열
       return itemValues.some((itemValue) =>
         itemValue.toString().toLowerCase().includes(value.toLowerCase())
       );
@@ -152,7 +147,7 @@ const Type3 = () => {
 
     const pagination = tableParams.pagination;
     const startIndex = (pagination.current - 1) * pagination.pageSize;
-    const endIndex = startIndex + pagination.pageSize - 1;
+    const endIndex = startIndex + pagination.pageSize;
     const slicedData = filteredData.slice(startIndex, endIndex);
 
     const updatedGrandTotal = {
@@ -167,14 +162,13 @@ const Type3 = () => {
     };
 
     setGrandTotal(updatedGrandTotal);
-
-    setData([...slicedData, updatedGrandTotal]);
+    setData(slicedData);
   };
 
-  //pageSize 변경
+  // pageSize 변경
   const handlePageSizeChange = (value) => {
     const totalItems = defaultdata.length;
-    const pageSize = value === 40 ? totalItems + 1 : value + 1;
+    const pageSize = value === 40 ? totalItems : value;
 
     setTableParams((prevParams) => ({
       ...prevParams,
@@ -185,9 +179,9 @@ const Type3 = () => {
     }));
   };
 
-  //조회된 항목 수
+  // 조회된 항목 수
   const itemLength = () => {
-    return searchText ? data.length - 1 : defaultdata.length;
+    return searchText ? data.length : defaultdata.length;
   };
 
   return (
@@ -205,7 +199,7 @@ const Type3 = () => {
             ]}
             onChange={handlePageSizeChange}
           />
-          조회된 항목 수 : {itemLength()}
+          조회된 항목 수: {itemLength()}
         </div>
         <div>
           <Search
@@ -219,7 +213,6 @@ const Type3 = () => {
         id="table"
         pagination={tableParams.pagination}
         columns={columns}
-        // dataSource={data ? [...data, grandTotal] : []}
         dataSource={data}
         rowSelection={{
           getCheckboxProps: (record) => ({
@@ -229,12 +222,22 @@ const Type3 = () => {
         loading={loading}
         onChange={handleTableChange}
         rowClassName={rowClassName}
+        footer={() => (
+          <tfoot>
+            <tr className="total-row">
+              <td style={{ width: "30%" }}></td>
+              <td style={{ width: "30%" }}>{grandTotal.keyword}</td>
+              <td style={{ width: "30%" }}>{grandTotal.exposeNum}</td>
+              <td style={{ width: "30%" }}>{grandTotal.roas}</td>
+            </tr>
+          </tfoot>
+        )}
       />
     </div>
   );
 };
 
-//원하는 데이터그리드 컴포넌트 출력
+// 원하는 데이터그리드 컴포넌트 출력
 const DataGridComponent = () => {
   return (
     <div>

@@ -443,7 +443,7 @@ const Type3 = () => {
   ];
   //실제 데이터
   const defaultdata = [];
-  for (let i = 1; i <= 22; i++) {
+  for (let i = 1; i <= 21; i++) {
     defaultdata.push({
       key: i,
       keyword: `방수천-${i}`,
@@ -472,7 +472,7 @@ const Type3 = () => {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 11,
+      pageSize: 10,
     },
     //정렬
     sorter: {
@@ -522,8 +522,8 @@ const Type3 = () => {
     }));
 
     const pagination = tableParams.pagination;
-    const startIndex = (pagination.current - 1) * (pagination.pageSize - 1);
-    const endIndex = startIndex + pagination.pageSize - 1;
+    const startIndex = (pagination.current - 1) * pagination.pageSize;
+    const endIndex = startIndex + pagination.pageSize;
     const slicedData = sortedData.slice(startIndex, endIndex);
 
     const updatedGrandTotal = {
@@ -543,7 +543,8 @@ const Type3 = () => {
     };
 
     setGrandTotal(updatedGrandTotal);
-    setData([...slicedData, updatedGrandTotal]);
+    // setData([...slicedData, updatedGrandTotal]);
+    setData(slicedData);
     setLoading(false);
   }, [tableParams.sorter, tableParams.pagination.pageSize]); //정렬옵션 변경할 때마다 실행
 
@@ -588,8 +589,8 @@ const Type3 = () => {
     }));
 
     const pagination = tableParams.pagination;
-    const startIndex = (pagination.current - 1) * (pagination.pageSize - 1);
-    const endIndex = startIndex + pagination.pageSize - 1;
+    const startIndex = (pagination.current - 1) * pagination.pageSize;
+    const endIndex = startIndex + pagination.pageSize;
     const slicedData = filteredData.slice(startIndex, endIndex);
 
     const updatedGrandTotal = {
@@ -608,14 +609,14 @@ const Type3 = () => {
       className: "total-row",
     };
     setGrandTotal(updatedGrandTotal);
-
-    setData([...slicedData, updatedGrandTotal]);
+    setData(slicedData);
+    // setData([...slicedData, updatedGrandTotal]);
   };
 
   //pageSize 변경
   const handlePageSizeChange = (value) => {
     const totalItems = defaultdata.length;
-    const pageSize = value === 40 ? totalItems + 1 : value + 1;
+    const pageSize = value === 40 ? totalItems : value;
 
     setTableParams((prevParams) => ({
       ...prevParams,
@@ -628,7 +629,7 @@ const Type3 = () => {
 
   //조회된 항목 수
   const itemLength = () => {
-    return searchText ? data.length - 1 : defaultdata.length;
+    return searchText ? data.length : defaultdata.length;
   };
 
   return (
@@ -687,6 +688,21 @@ const Type3 = () => {
         loading={loading}
         onChange={handleTableChange}
         rowClassName={rowClassName}
+        footer={() => (
+          <tfoot>
+            <tr className="total-row">
+              <td style={{ width: "20%" }}></td>
+              <td style={{ width: "20%" }} colSpan={3}>
+                {grandTotal.keyword}
+              </td>
+              <td style={{ width: "20%" }}></td>
+              <td style={{ width: "20%" }}>{grandTotal.exposeNum}</td>
+              <td style={{ width: "20%" }}>{grandTotal.turnoverNum}</td>
+              <td style={{ width: "20%" }}>{grandTotal.sales}</td>
+              <td style={{ width: "20%" }}>{grandTotal.roas}</td>
+            </tr>
+          </tfoot>
+        )}
       />
     </div>
   );

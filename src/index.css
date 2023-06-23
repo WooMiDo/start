@@ -33,14 +33,14 @@
   border-collapse: collapse;
 }
 
-.cardName {
+.scorecard .cardName {
   background-color: #f3f3f7;
   border: 1px solid #ccc;
   padding: 10px;
   width: 200px;
 }
 
-.emphasis {
+.scorecard .emphasis {
   font-weight: 900;
   font-size: 20px;
 }
@@ -59,9 +59,17 @@
   padding: 20px;
 }
 
-.basicBtn {
+.type1Div .basicBtn {
   background-color: white;
   border: 1px solid #ccc;
+}
+
+.type1Div th.ant-table-cell {
+  text-align: center;
+}
+
+.type1Div td.ant-table-cell {
+  text-align: right;
 }
 
 /**
@@ -74,33 +82,33 @@
   padding: 20px;
 }
 
-.deleteBtn {
+.type2Div .deleteBtn {
   background-color: #f33155;
   border: 1px solid #f33155;
   color: white;
   border-radius: 15%;
 }
 
-.statusBtn {
+.type2Div .statusBtn {
   background-color: white;
   border: 1px solid;
   border-radius: 10px 10px 10px 10px;
   width: 55px;
 }
 
-.status-creating {
+.type2Div .status-creating {
   color: rgb(14, 161, 247);
 }
 
-.status-error {
+.type2Div .status-error {
   color: red;
 }
 
-.status-complete {
+.type2Div .status-complete {
   color: #666;
 }
 
-.newBtn {
+.type2Div .newBtn {
   background-color: rgb(14, 161, 247);
 }
 
@@ -114,27 +122,36 @@
   padding: 4px 10px;
 }
 
-.icon-behavioral {
+.type2Div .icon-behavioral {
   color: #ffdc29;
 }
 
-.icon-discovery {
+.type2Div .icon-discovery {
   color: rgb(0, 238, 255);
 }
 
-.icon-union {
+.type2Div .icon-union {
   color: rgba(165, 11, 165);
 }
 
-.icon {
+.type2Div .icon {
   font-size: 11px;
 }
 
-.excelBtn {
+.type2Div .excelBtn {
   color: #333;
   border: 1px solid #ddd;
   padding: 5px 10px !important;
 }
+
+.type2Div .ant-table-cell .ant-table-column-has-sorters {
+  text-align: center;
+}
+
+.type2Div .ant-table-cell {
+  text-align: right;
+}
+
 /**
  ************************************* type3 ****************************************
  *
@@ -146,8 +163,21 @@
   font-weight: bold;
 }
 
-.expanded-column {
-  width: 120px;
+.type3Div .expanded-column {
+  width: 180px;
+}
+
+.type3Div .ant-table-selection-column {
+  width: 33px;
+}
+
+.type3Div .selection-column {
+  border-right: none;
+  width: 4px;
+}
+
+.type3Div .column-width-fix {
+  width: 270px;
 }
 
 .type3Div .ant-table th,
@@ -155,24 +185,27 @@ td {
   border-right: 1px solid #e4e7ea;
 }
 
-.total-row td {
+.type3Div .total-row td {
   border-top-style: double;
-}
-
-.ant-table-row ant-table-row-level-0 total-row {
-  text-align: right;
 }
 
 .type3Div .ant-table-row-expand-icon-cell {
   border-right: none;
+  width: 46px;
 }
 
-.selectText {
+.type3Div .selectText {
   font-weight: 400;
 }
 
-.ant-table-wrapper .ant-table tbody > tr > td {
-  text-align: left;
+.type3Div .ant-table-wrapper .ant-table tbody > tr > td {
+  text-align: right;
+}
+
+.type3Div .ant-table-wrapper .ant-table-footer {
+  padding: 0;
+  background-color: white;
+  text-align: right;
 }
 
 /**
