@@ -7,36 +7,6 @@ import { utils as XLSXUtils, writeFile } from "xlsx";
 import "./index.css";
 
 /**
- ******************************* ScoreCard **********************************
- *
- * */
-
-const ScoreCard = () => {
-  const data = [
-    { id: 1, name: "페이지뷰", value: 32 },
-    { id: 2, name: "전체 방문수", value: 27 },
-    { id: 3, name: "북마크/직접입력 방문수", value: 17 },
-    { id: 4, name: "외부유입 방문 랜딩페이지 통과율", value: "44.44%" },
-    { id: 5, name: "전체 반송수", value: 22 },
-  ];
-
-  return (
-    <table className="scorecard">
-      <tbody>
-        <tr>
-          {data.map((item) => (
-            <td key={item.id} className="cardName">
-              {item.name}
-              <br /> <strong className="emphasis">{item.value}</strong>
-            </td>
-          ))}
-        </tr>
-      </tbody>
-    </table>
-  );
-};
-
-/**
  ******************************* Type1 **********************************
  *
  * */
@@ -776,7 +746,6 @@ const DataGridComponent = () => {
       <Type1 />
       <Type2 />
       <Type3 />
-      <ScoreCard />
     </div>
   );
 };

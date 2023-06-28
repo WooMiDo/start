@@ -1,11 +1,75 @@
 import React, { useEffect, useState } from "react";
 import ECharts, { EChartsReactProps } from "echarts-for-react";
+import { Radio, Select } from "antd";
 import "./index.css";
 
 /**
- ******************************* FilterChart **********************************
+ ******************************* ScoreCart 숫자형 ******************************
  *
  * */
+
+const NumberScoreCard = () => {
+  const data = [
+    { id: 1, name: "페이지뷰", value: 32 },
+    { id: 2, name: "전체 방문수", value: 27 },
+    { id: 3, name: "북마크/직접입력 방문수", value: 17 },
+    { id: 4, name: "외부유입 방문 랜딩페이지 통과율", value: "44.44%" },
+    { id: 5, name: "전체 반송수", value: 22 },
+  ];
+
+  return (
+    <table className="scorecard">
+      <tbody>
+        <tr>
+          {data.map((item) => (
+            <td key={item.id} className="cardName">
+              {item.name}
+              <br /> <strong className="emphasis">{item.value}</strong>
+            </td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
+/**
+ ******************************* ScoreCart 차트형 ******************************
+ *
+ * */
+
+const ChartScoreCard = () => {
+  const title = "총 광고비";
+  const value = "3,283,872";
+  const unit = "원";
+  const percent = 100;
+  const upAnddown = percent > 0 ? "▲" : "▼";
+  const upAnddownColor = percent > 0 ? "#de481f" : "#4993e4";
+
+  return (
+    <div className="chartScoreCardDiv">
+      <div className="chartScoreCard">
+        <h3 className="CardTitle">{title}</h3>
+        <div className="CardValueDiv">
+          <h1 className="CardValue">
+            {value}
+            <span className="won">{unit}</span>
+          </h1>
+          <span className="percent">
+            ( {percent}%{" "}
+            <span className="upAnddown" style={{ color: upAnddownColor }}>
+              &nbsp;{upAnddown}
+            </span>{" "}
+            )
+          </span>
+        </div>
+        <div className="areaChartCard">
+          <AreaChart />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 /**
  ******************************* LineChart **********************************
@@ -13,23 +77,224 @@ import "./index.css";
  * */
 
 const LineChart = ({ colors }) => {
-  //x축 데이터
-  const xdata = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  //선택된 기간에 대한 x축 data값 생성(일, 주, 월)
+  const generateDates = (start, end, interval) => {
+    const dates = [];
+    const current = new Date(start);
+    while (current < end) {
+      dates.push(current.toLocaleDateString());
+      if (interval === "day") {
+        current.setDate(current.getDate() + 1);
+      } else if (interval === "week") {
+        current.setDate(current.getDate() + 7);
+      } else if (interval === "month") {
+        current.setMonth(current.getMonth() + 1);
+      }
+    }
+    dates.push(end.toLocaleDateString()); // 마지막 날짜 포함
+    return dates;
+  };
+
+  const [startDate, setStartDate] = useState(new Date("2023/04/20"));
+  const [endDate, setEndDate] = useState(new Date("2023/06/01"));
+  const [xdata, setXData] = useState(generateDates(startDate, endDate, "day"));
 
   //실제 데이터 (이름, 값)
-  const data = [
-    { name: "a", value: [150, 230, 224, 218, 135, 147, 260] },
-    { name: "b", value: [160, 250, 21, 518, 95, 77, 210] },
-    { name: "c", value: [100, 200, 101, 318, 195, 107, 210] },
-    { name: "d", value: [10, 20, 11, 31, 15, 17, 20] },
-    { name: "e", value: [110, 60, 111, 91, 215, 117, 120] },
-    { name: "f", value: [30, 40, 91, 101, 115, 117, 200] },
+  const defaultData = [
+    {
+      group: "광고주",
+      groupname: "아트",
+      name: "노출수",
+      value: [60, 50, 21, 58, 95, 77, 21],
+    },
+    {
+      group: "광고주",
+      groupname: "아트",
+      name: "클릭수",
+      value: [10, 20, 81, 38, 95, 17, 81],
+    },
+    {
+      group: "광고주",
+      groupname: "아트",
+      name: "CTR",
+      value: [40, 60, 84, 38, 55, 77, 40],
+    },
+    {
+      group: "광고주",
+      groupname: "컴투펫",
+      name: "노출수",
+      value: [50, 30, 24, 18, 35, 47, 60],
+    },
+    {
+      group: "광고주",
+      groupname: "컴투펫",
+      name: "클릭수",
+      value: [60, 50, 21, 58, 95, 77, 21],
+    },
+    {
+      group: "광고주",
+      groupname: "컴투펫",
+      name: "CTR",
+      value: [10, 20, 81, 38, 95, 17, 81],
+    },
+    {
+      group: "광고주",
+      groupname: "휴라이트",
+      name: "노출수",
+      value: [40, 60, 84, 38, 55, 77, 40],
+    },
+    {
+      group: "광고주",
+      groupname: "휴라이트",
+      name: "클릭수",
+      value: [20, 40, 71, 68, 55, 17, 41],
+    },
+    {
+      group: "광고주",
+      groupname: "휴라이트",
+      name: "CTR",
+      value: [30, 50, 41, 58, 65, 77, 91],
+    },
+    {
+      group: "광고주",
+      groupname: "후퍼옵틱",
+      name: "노출수",
+      value: [110, 160, 91, 41, 65, 97, 20],
+    },
+    {
+      group: "광고주",
+      groupname: "후퍼옵틱",
+      name: "클릭수",
+      value: [160, 250, 21, 318, 95, 77, 21],
+    },
+    {
+      group: "광고주",
+      groupname: "후퍼옵틱",
+      name: "CTR",
+      value: [150, 20, 224, 218, 135, 47, 26],
+    },
+    {
+      group: "매체",
+      groupname: "검샷",
+      name: "노출수",
+      value: [110, 160, 91, 41, 65, 97, 20],
+    },
+    {
+      group: "매체",
+      groupname: "검샷",
+      name: "클릭수",
+      value: [160, 250, 21, 318, 95, 77, 21],
+    },
+    {
+      group: "매체",
+      groupname: "검샷",
+      name: "CTR",
+      value: [150, 20, 224, 218, 135, 47, 26],
+    },
+    {
+      group: "매체",
+      groupname: "컴샷",
+      name: "노출수",
+      value: [30, 50, 41, 58, 65, 77, 91],
+    },
+    {
+      group: "매체",
+      groupname: "컴샷",
+      name: "클릭수",
+      value: [110, 160, 91, 41, 65, 97, 20],
+    },
+    {
+      group: "매체",
+      groupname: "컴샷",
+      name: "CTR",
+      value: [160, 250, 21, 318, 95, 77, 21],
+    },
   ];
 
+  const [data, setData] = useState(defaultData);
+  const [filteredData, setFilteredData] = useState(
+    defaultData.filter(
+      (item) =>
+        item.group === defaultData[0].group && item.name === defaultData[0].name
+    )
+  );
+  const [selectedGroup, setSelectedGroup] = useState(defaultData[0].group);
+  const [selectedName, setSelectedName] = useState(defaultData[0].name);
+
+  const handlexDataChange = (e) => {
+    const value = e.target.value;
+    if (value === "day") {
+      const dates = generateDates(startDate, endDate, "day");
+      setXData(dates);
+    } else if (value === "week") {
+      const dates = generateDates(startDate, endDate, "week");
+      setXData(dates);
+    } else if (value === "month") {
+      const dates = generateDates(startDate, endDate, "month");
+      setXData(dates);
+    }
+  };
+
+  //group별 필터링
+  const handleGroupChange = (e) => {
+    setSelectedGroup(e.target.value);
+  };
+
+  //name별 필터링
+  const handleChange = (value) => {
+    setSelectedName(value);
+  };
+
+  const [options, setOptions] = useState({});
+
+  useEffect(() => {
+    const filteredData = defaultData.filter(
+      (item) => item.group === selectedGroup && item.name === selectedName
+    );
+    setFilteredData(filteredData);
+  }, [selectedGroup, selectedName]);
+
+  useEffect(() => {
+    const updateOptions = {
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "cross",
+        },
+      },
+      grid: {
+        left: 50,
+        right: 50,
+        top: 10,
+        bottom: 50,
+      },
+      color: colors,
+      legend: {
+        data: filteredData.map((item) => item.groupname),
+        bottom: "bottom",
+        icon: "circle",
+        itemGap: 25,
+      },
+      xAxis: {
+        type: "category",
+        data: xdata,
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: "value",
+        axisLine: {
+          show: true,
+        },
+      },
+      series: dataSeries(filteredData),
+    };
+    setOptions(updateOptions);
+  }, [xdata, filteredData, data]);
+
   //차트에 데이터값 출력
-  const dataSeries = () => {
-    return data.map((item) => ({
-      name: item.name,
+  const dataSeries = (filteredData) => {
+    return filteredData.map((item) => ({
+      name: item.groupname,
       type: "line",
       smooth: true,
       data: item.value,
@@ -38,34 +303,46 @@ const LineChart = ({ colors }) => {
     }));
   };
 
-  //차트 속성
-  const [options] = useState({
-    color: colors,
-    legend: {
-      data: data.map((item) => item.name),
-      bottom: "bottom",
-      icon: "circle",
-      itemGap: 25,
-    },
-    xAxis: {
-      type: "category",
-      data: xdata,
-      boundaryGap: false,
-    },
-    yAxis: {
-      type: "value",
-      axisLine: {
-        show: true,
-      },
-    },
-    series: dataSeries(),
-  });
-
   return (
-    <ECharts
-      option={options}
-      opts={{ renderer: "svg", width: "auto", height: "auto" }}
-    />
+    <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          margin: 20,
+        }}
+      >
+        <div>
+          <Radio.Group value={selectedGroup} onChange={handleGroupChange}>
+            <Radio.Button value="광고주">광고주</Radio.Button>
+            <Radio.Button value="매체">매체</Radio.Button>
+          </Radio.Group>
+          &nbsp;&nbsp;
+          <Select
+            value={selectedName}
+            className="selectBox"
+            options={[
+              { value: "노출수", label: "노출수" },
+              { value: "클릭수", label: "클릭수" },
+              { value: "CTR", label: "CTR" },
+            ]}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Radio.Group defaultValue="day" onChange={handlexDataChange}>
+            <Radio.Button value="day">일</Radio.Button>
+            <Radio.Button value="week">주</Radio.Button>
+            <Radio.Button value="month">월</Radio.Button>
+          </Radio.Group>
+        </div>
+      </div>
+      <ECharts
+        option={options}
+        notMerge={true}
+        // opts={{ renderer: "svg", width: "auto", height: "auto" }}
+      />
+    </div>
   );
 };
 
@@ -155,7 +432,7 @@ const PieChart = ({ colors }) => {
       <div className="pieChart">
         <ECharts
           option={options}
-          opts={{ renderer: "svg", width: "auto", height: "auto" }}
+          // opts={{ renderer: "svg", width: "auto", height: "auto" }}
         />
       </div>
     </div>
@@ -167,7 +444,7 @@ const PieChart = ({ colors }) => {
  *
  * */
 
-const BarChart = ({ colors }) => {
+const BarChart = () => {
   //실제 데이터 (이름, 값)
   const data = [
     { value: 21, name: "Direct" },
@@ -175,6 +452,12 @@ const BarChart = ({ colors }) => {
   ];
 
   const [options] = useState({
+    grid: {
+      left: 100,
+      right: 100,
+      top: 50,
+      bottom: 50,
+    },
     yAxis: {
       type: "category",
       data: data.map((item) => item.name).reverse(),
@@ -189,7 +472,7 @@ const BarChart = ({ colors }) => {
         data: data.map((item) => item.value).reverse(),
         type: "bar",
         itemStyle: {
-          color: colors,
+          color: "#4180ec",
         },
         barWidth: "80%",
       },
@@ -197,10 +480,10 @@ const BarChart = ({ colors }) => {
   });
 
   return (
-    <div className="BarChartDiv">
+    <div className="BarChartDiv" style={{ height: "400px" }}>
       <ECharts
         option={options}
-        opts={{ renderer: "svg", width: "auto", height: "auto" }}
+        // opts={{ renderer: "svg", width: "auto", height: "auto" }}
       />
     </div>
   );
@@ -241,6 +524,12 @@ const DynamicChart = ({ colors }) => {
   ];
 
   const [options] = useState({
+    grid: {
+      left: 50,
+      right: 50,
+      top: 50,
+      bottom: 50,
+    },
     color: colors,
     tooltip: {
       trigger: "axis",
@@ -306,7 +595,7 @@ const DynamicChart = ({ colors }) => {
     <div className="DynamicChart">
       <ECharts
         option={options}
-        opts={{ renderer: "svg", width: "auto", height: "auto" }}
+        // opts={{ renderer: "svg", width: "auto", height: "auto" }}
       />
     </div>
   );
@@ -322,6 +611,12 @@ const AreaChart = () => {
   //   const datazero = [145, 211, 301, 234, 290, 130, 110];
 
   const [options] = useState({
+    grid: {
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+    },
     xAxis: {
       type: "category",
       boundaryGap: false,
@@ -346,10 +641,13 @@ const AreaChart = () => {
   });
 
   return (
-    <ECharts
-      option={options}
-      opts={{ renderer: "svg", width: "auto", height: "auto" }}
-    />
+    <div className="AreaChart">
+      <ECharts
+        option={options}
+        style={{ height: "30px" }}
+        // opts={{ renderer: "svg", width: "auto", height: "auto" }}
+      />
+    </div>
   );
 };
 
@@ -372,10 +670,17 @@ const ChartComponent = () => {
   return (
     <div>
       <LineChart colors={colors} />
+      <NumberScoreCard />
+      <div className="chartScoreCardContainer">
+        <ChartScoreCard />
+        <ChartScoreCard />
+        <ChartScoreCard />
+        <ChartScoreCard />
+      </div>
       <PieChart colors={colors} />
-      <BarChart color={colors} />
       <DynamicChart colors={colors} />
       <AreaChart />
+      <BarChart />
     </div>
   );
 };

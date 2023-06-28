@@ -4,22 +4,11 @@
  * */
 
 .pieChartDiv {
-  /* border: 1px solid #d9dadb; */
-  float: left;
+  display: block;
   width: 33%;
 }
 .pieChart {
   text-align: center;
-}
-
-.BarChartDiv {
-  /* width: 50%; */
-  margin: 20px;
-  display: inline-block;
-}
-
-.DynamicChart {
-  margin: 20px;
 }
 
 /**
@@ -43,6 +32,67 @@
 .scorecard .emphasis {
   font-weight: 900;
   font-size: 20px;
+}
+
+.chartScoreCardDiv {
+  position: relative;
+  padding-left: 0px !important;
+  padding-right: 15px;
+  min-height: 1px;
+  margin: 20px;
+}
+
+.chartScoreCard {
+  padding: 25px;
+  margin-bottom: 30px;
+  display: block;
+  box-shadow: 0 1px 4px 0 rgb(21 27 38 / 8%);
+  min-height: 178px;
+  border: 1px solid #e8ecee;
+}
+
+.CardTitle {
+  font-weight: 600 !important;
+  margin-bottom: 0;
+  text-transform: none;
+  font-size: 15px;
+  margin: 0px 0px 12px;
+  line-height: 30px;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+}
+
+.CardValueDiv {
+  text-align: right;
+}
+
+.CardValue {
+  line-height: normal;
+  font-size: 30px;
+  font-weight: 550 !important;
+}
+
+.won {
+  font-size: 16px !important;
+}
+
+.percent {
+  font-size: 11px;
+  color: #898989;
+  letter-spacing: -1px;
+  padding-left: 3px;
+  font-weight: 500;
+  display: inline-block;
+  max-width: 100px;
+}
+
+.chartScoreCardContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.chartScoreCardContainer > * {
+  width: 20%;
 }
 
 /**
@@ -164,7 +214,7 @@
 }
 
 .type3Div .expanded-column {
-  width: 180px;
+  width: 190px;
 }
 
 .type3Div .ant-table-selection-column {
@@ -177,7 +227,7 @@
 }
 
 .type3Div .column-width-fix {
-  width: 270px;
+  width: 310px;
 }
 
 .type3Div .ant-table th,
@@ -191,7 +241,7 @@ td {
 
 .type3Div .ant-table-row-expand-icon-cell {
   border-right: none;
-  width: 46px;
+  width: 43px;
 }
 
 .type3Div .selectText {
@@ -267,4 +317,16 @@ td {
   width: 125px;
   color: #555;
   margin-right: 12px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #313131;
+  font-family: "Rubik", sans-serif;
+  margin: 10px 0;
+  font-weight: 300;
 }
