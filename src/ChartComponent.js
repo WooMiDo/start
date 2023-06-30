@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import ECharts, { EChartsReactProps } from "echarts-for-react";
+import ECharts from "echarts-for-react";
 import { Radio, Select } from "antd";
 import "./index.css";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 
 /**
  ******************************* ScoreCart 숫자형 ******************************
@@ -458,6 +460,8 @@ const BarChart = () => {
       top: 50,
       bottom: 50,
     },
+
+    //세로 그래프는 x축 y축만 변경하면 됨
     yAxis: {
       type: "category",
       data: data.map((item) => item.name).reverse(),
@@ -486,6 +490,132 @@ const BarChart = () => {
         // opts={{ renderer: "svg", width: "auto", height: "auto" }}
       />
     </div>
+  );
+};
+
+/**
+ ******************************* TwoWay BarChart *******************************
+ *
+ * */
+
+const TwoWayBarChart = () => {
+  //연령
+  const categories = [
+    "10대 이하",
+    "20대",
+    "30대",
+    "40대",
+    "50대",
+    "60대",
+    "70대 이상",
+  ];
+
+  //왼쪽 bar data
+  const Ldata = [-9.0, -7.5, -6.7, -5.7, -4.9, -3.7, -1.2];
+
+  //오른쪽 bar data
+  const Rdata = [8.8, 7.4, 6.6, 5.7, 4.8, 3.7, 2.8];
+
+  const options = {
+    chart: {
+      type: "bar",
+      // height: 350,
+    },
+    title: {
+      text: "연령",
+      align: "left",
+      style: {
+        color: "#313131",
+        fontSize: "14px",
+        fontWeight: "600",
+      },
+    },
+    xAxis: [
+      //왼쪽 bar
+      {
+        categories: categories,
+        reversed: false,
+        labels: {
+          style: {
+            color: "#666",
+            fontSize: "11px",
+          },
+        },
+        lineColor: "#CCD6EB",
+      },
+      //오른쪽 bar(opposite: true)
+      {
+        categories: categories,
+        reversed: false,
+        opposite: true,
+        linkedTo: 0, //x축 동일하게 오른쪽에도 적용
+        labels: {
+          style: {
+            color: "#666",
+            fontSize: "11px",
+          },
+        },
+        lineColor: "#CCD6EB",
+      },
+    ],
+    yAxis: {
+      title: false,
+      labels: {
+        formatter: function () {
+          return Math.abs(this.value) + "%";
+        },
+        style: {
+          color: "#666",
+          fontSize: "11px",
+        },
+      },
+      tickInterval: 2,
+    },
+    colors: ["#4CD2B5", "#FFBB44"],
+    plotOptions: {
+      series: {
+        stacking: "normal",
+      },
+    },
+
+    tooltip: {
+      formatter: function () {
+        return (
+          "<b>" +
+          this.series.name +
+          ", age " +
+          this.point.category +
+          "</b><br/>" +
+          "Population: " +
+          Math.abs(this.point.y) +
+          "%"
+        );
+      },
+      borderWidth: 1,
+    },
+
+    series: [
+      {
+        name: "남",
+        data: Ldata,
+      },
+      {
+        name: "여",
+        data: Rdata,
+      },
+    ],
+    legend: {
+      itemStyle: {
+        color: "#313131",
+        fontSize: "13px",
+        fontWeight: "600",
+      },
+    },
+  };
+  return (
+    <>
+      <HighchartsReact highcharts={Highcharts} options={options} />
+    </>
   );
 };
 
@@ -669,6 +799,7 @@ const ChartComponent = () => {
   //원하는 차트컴포넌트 출력
   return (
     <div>
+      <TwoWayBarChart />
       <LineChart colors={colors} />
       <NumberScoreCard />
       <div className="chartScoreCardContainer">

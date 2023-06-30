@@ -11,6 +11,18 @@
   text-align: center;
 }
 
+.TwoWayBarChart-title {
+  font-size: 14px;
+  font-family: sans-serif, "Rubik";
+  font-weight: 600;
+  color: #313131;
+}
+
+.twoway-bar-x-axis-labels {
+  color: "#666";
+  font-size: "11px";
+}
+
 /**
  ************************************* ScoreCard ****************************************
  *

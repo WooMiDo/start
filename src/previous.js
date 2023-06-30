@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import ECharts, { EChartsReactProps } from "echarts-for-react";
 import { Radio, Select } from "antd";
 import "./index.css";
+import Highcharts, { color } from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 
 /**
  ******************************* ScoreCart 숫자형 ******************************
@@ -77,23 +79,224 @@ const ChartScoreCard = () => {
  * */
 
 const LineChart = ({ colors }) => {
-  //x축 데이터
-  const xdata = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  //선택된 기간에 대한 x축 data값 생성(일, 주, 월)
+  const generateDates = (start, end, interval) => {
+    const dates = [];
+    const current = new Date(start);
+    while (current < end) {
+      dates.push(current.toLocaleDateString());
+      if (interval === "day") {
+        current.setDate(current.getDate() + 1);
+      } else if (interval === "week") {
+        current.setDate(current.getDate() + 7);
+      } else if (interval === "month") {
+        current.setMonth(current.getMonth() + 1);
+      }
+    }
+    dates.push(end.toLocaleDateString()); // 마지막 날짜 포함
+    return dates;
+  };
+
+  const [startDate, setStartDate] = useState(new Date("2023/04/20"));
+  const [endDate, setEndDate] = useState(new Date("2023/06/01"));
+  const [xdata, setXData] = useState(generateDates(startDate, endDate, "day"));
 
   //실제 데이터 (이름, 값)
-  const data = [
-    { name: "a", value: [150, 230, 224, 218, 135, 147, 260] },
-    { name: "b", value: [160, 250, 21, 518, 95, 77, 210] },
-    { name: "c", value: [100, 200, 101, 318, 195, 107, 210] },
-    { name: "d", value: [10, 20, 11, 31, 15, 17, 20] },
-    { name: "e", value: [110, 60, 111, 91, 215, 117, 120] },
-    { name: "f", value: [30, 40, 91, 101, 115, 117, 200] },
+  const defaultData = [
+    {
+      group: "광고주",
+      groupname: "아트",
+      name: "노출수",
+      value: [60, 50, 21, 58, 95, 77, 21],
+    },
+    {
+      group: "광고주",
+      groupname: "아트",
+      name: "클릭수",
+      value: [10, 20, 81, 38, 95, 17, 81],
+    },
+    {
+      group: "광고주",
+      groupname: "아트",
+      name: "CTR",
+      value: [40, 60, 84, 38, 55, 77, 40],
+    },
+    {
+      group: "광고주",
+      groupname: "컴투펫",
+      name: "노출수",
+      value: [50, 30, 24, 18, 35, 47, 60],
+    },
+    {
+      group: "광고주",
+      groupname: "컴투펫",
+      name: "클릭수",
+      value: [60, 50, 21, 58, 95, 77, 21],
+    },
+    {
+      group: "광고주",
+      groupname: "컴투펫",
+      name: "CTR",
+      value: [10, 20, 81, 38, 95, 17, 81],
+    },
+    {
+      group: "광고주",
+      groupname: "휴라이트",
+      name: "노출수",
+      value: [40, 60, 84, 38, 55, 77, 40],
+    },
+    {
+      group: "광고주",
+      groupname: "휴라이트",
+      name: "클릭수",
+      value: [20, 40, 71, 68, 55, 17, 41],
+    },
+    {
+      group: "광고주",
+      groupname: "휴라이트",
+      name: "CTR",
+      value: [30, 50, 41, 58, 65, 77, 91],
+    },
+    {
+      group: "광고주",
+      groupname: "후퍼옵틱",
+      name: "노출수",
+      value: [110, 160, 91, 41, 65, 97, 20],
+    },
+    {
+      group: "광고주",
+      groupname: "후퍼옵틱",
+      name: "클릭수",
+      value: [160, 250, 21, 318, 95, 77, 21],
+    },
+    {
+      group: "광고주",
+      groupname: "후퍼옵틱",
+      name: "CTR",
+      value: [150, 20, 224, 218, 135, 47, 26],
+    },
+    {
+      group: "매체",
+      groupname: "검샷",
+      name: "노출수",
+      value: [110, 160, 91, 41, 65, 97, 20],
+    },
+    {
+      group: "매체",
+      groupname: "검샷",
+      name: "클릭수",
+      value: [160, 250, 21, 318, 95, 77, 21],
+    },
+    {
+      group: "매체",
+      groupname: "검샷",
+      name: "CTR",
+      value: [150, 20, 224, 218, 135, 47, 26],
+    },
+    {
+      group: "매체",
+      groupname: "컴샷",
+      name: "노출수",
+      value: [30, 50, 41, 58, 65, 77, 91],
+    },
+    {
+      group: "매체",
+      groupname: "컴샷",
+      name: "클릭수",
+      value: [110, 160, 91, 41, 65, 97, 20],
+    },
+    {
+      group: "매체",
+      groupname: "컴샷",
+      name: "CTR",
+      value: [160, 250, 21, 318, 95, 77, 21],
+    },
   ];
 
+  const [data, setData] = useState(defaultData);
+  const [filteredData, setFilteredData] = useState(
+    defaultData.filter(
+      (item) =>
+        item.group === defaultData[0].group && item.name === defaultData[0].name
+    )
+  );
+  const [selectedGroup, setSelectedGroup] = useState(defaultData[0].group);
+  const [selectedName, setSelectedName] = useState(defaultData[0].name);
+
+  const handlexDataChange = (e) => {
+    const value = e.target.value;
+    if (value === "day") {
+      const dates = generateDates(startDate, endDate, "day");
+      setXData(dates);
+    } else if (value === "week") {
+      const dates = generateDates(startDate, endDate, "week");
+      setXData(dates);
+    } else if (value === "month") {
+      const dates = generateDates(startDate, endDate, "month");
+      setXData(dates);
+    }
+  };
+
+  //group별 필터링
+  const handleGroupChange = (e) => {
+    setSelectedGroup(e.target.value);
+  };
+
+  //name별 필터링
+  const handleChange = (value) => {
+    setSelectedName(value);
+  };
+
+  const [options, setOptions] = useState({});
+
+  useEffect(() => {
+    const filteredData = defaultData.filter(
+      (item) => item.group === selectedGroup && item.name === selectedName
+    );
+    setFilteredData(filteredData);
+  }, [selectedGroup, selectedName]);
+
+  useEffect(() => {
+    const updateOptions = {
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "cross",
+        },
+      },
+      grid: {
+        left: 50,
+        right: 50,
+        top: 10,
+        bottom: 50,
+      },
+      color: colors,
+      legend: {
+        data: filteredData.map((item) => item.groupname),
+        bottom: "bottom",
+        icon: "circle",
+        itemGap: 25,
+      },
+      xAxis: {
+        type: "category",
+        data: xdata,
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: "value",
+        axisLine: {
+          show: true,
+        },
+      },
+      series: dataSeries(filteredData),
+    };
+    setOptions(updateOptions);
+  }, [xdata, filteredData, data]);
+
   //차트에 데이터값 출력
-  const dataSeries = () => {
-    return data.map((item) => ({
-      name: item.name,
+  const dataSeries = (filteredData) => {
+    return filteredData.map((item) => ({
+      name: item.groupname,
       type: "line",
       smooth: true,
       data: item.value,
@@ -102,40 +305,46 @@ const LineChart = ({ colors }) => {
     }));
   };
 
-  //차트 속성
-  const [options] = useState({
-    grid: {
-      left: 50,
-      right: 50,
-      top: 10,
-      bottom: 50,
-    },
-    color: colors,
-    legend: {
-      data: data.map((item) => item.name),
-      bottom: "bottom",
-      icon: "circle",
-      itemGap: 25,
-    },
-    xAxis: {
-      type: "category",
-      data: xdata,
-      boundaryGap: false,
-    },
-    yAxis: {
-      type: "value",
-      axisLine: {
-        show: true,
-      },
-    },
-    series: dataSeries(),
-  });
-
   return (
-    <ECharts
-      option={options}
-      // opts={{ renderer: "svg", width: "auto", height: "auto" }}
-    />
+    <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          margin: 20,
+        }}
+      >
+        <div>
+          <Radio.Group value={selectedGroup} onChange={handleGroupChange}>
+            <Radio.Button value="광고주">광고주</Radio.Button>
+            <Radio.Button value="매체">매체</Radio.Button>
+          </Radio.Group>
+          &nbsp;&nbsp;
+          <Select
+            value={selectedName}
+            className="selectBox"
+            options={[
+              { value: "노출수", label: "노출수" },
+              { value: "클릭수", label: "클릭수" },
+              { value: "CTR", label: "CTR" },
+            ]}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Radio.Group defaultValue="day" onChange={handlexDataChange}>
+            <Radio.Button value="day">일</Radio.Button>
+            <Radio.Button value="week">주</Radio.Button>
+            <Radio.Button value="month">월</Radio.Button>
+          </Radio.Group>
+        </div>
+      </div>
+      <ECharts
+        option={options}
+        notMerge={true}
+        // opts={{ renderer: "svg", width: "auto", height: "auto" }}
+      />
+    </div>
   );
 };
 
@@ -251,6 +460,8 @@ const BarChart = () => {
       top: 50,
       bottom: 50,
     },
+
+    //세로 그래프는 x축 y축만 변경하면 됨
     yAxis: {
       type: "category",
       data: data.map((item) => item.name).reverse(),
@@ -279,6 +490,124 @@ const BarChart = () => {
         // opts={{ renderer: "svg", width: "auto", height: "auto" }}
       />
     </div>
+  );
+};
+
+/**
+ ******************************* TwoWay BarChart *******************************
+ *
+ * */
+
+const TwoWayBarChart = () => {
+  //연령
+  const categories = [
+    "10대 이하",
+    "20대",
+    "30대",
+    "40대",
+    "50대",
+    "60대",
+    "70대 이상",
+  ];
+
+  //왼쪽 bar data
+  const Ldata = [-9.0, -7.5, -6.7, -5.7, -4.9, -3.7, -1.2];
+
+  //오른쪽 bar data
+  const Rdata = [8.8, 7.4, 6.6, 5.7, 4.8, 3.7, 2.8];
+
+  const options = {
+    chart: {
+      type: "bar",
+    },
+    title: {
+      text: "연령",
+      align: "left",
+      style: {
+        color: "#313131",
+        fontSize: "14px",
+        fontWeight: "600",
+      },
+    },
+    xAxis: [
+      //왼쪽 bar
+      {
+        categories: categories,
+        reversed: false,
+        labels: {
+          style: {
+            color: "#666",
+            fontSize: "11px",
+          },
+        },
+        lineColor: "#CCD6EB",
+      },
+      //오른쪽 bar(opposite: true)
+      {
+        categories: categories,
+        reversed: false,
+        opposite: true,
+        linkedTo: 0, //x축 동일하게 오른쪽에도 적용
+        labels: {
+          style: {
+            color: "#666",
+            fontSize: "11px",
+          },
+        },
+        lineColor: "#CCD6EB",
+      },
+    ],
+    yAxis: {
+      title: false,
+      labels: {
+        formatter: function () {
+          return Math.abs(this.value) + "%";
+        },
+        style: {
+          color: "#666",
+          fontSize: "11px",
+        },
+      },
+      tickInterval: 2,
+    },
+    colors: ["#4CD2B5", "#FFBB44"],
+    plotOptions: {
+      series: {
+        stacking: "normal",
+      },
+    },
+
+    tooltip: {
+      formatter: function () {
+        return (
+          `<b>${this.series.name}, age ${this.point.category}</b><br/>` +
+          `Population: ${Math.abs(this.point.y)}%`
+        );
+      },
+    },
+
+    series: [
+      {
+        name: "남",
+        data: Ldata,
+      },
+      {
+        name: "여",
+        data: Rdata,
+      },
+    ],
+    legend: {
+      itemStyle: {
+        color: "#313131",
+        fontSize: "13px",
+        fontWeight: "600",
+      },
+    },
+  };
+  return (
+    <Fragment>
+      <HighchartsReact highcharts={Highcharts} options={options} />
+    </Fragment>
   );
 };
 
@@ -444,49 +773,6 @@ const AreaChart = () => {
   );
 };
 
-/**
- ******************************* FilterChart **********************************
- *
- * */
-const FilterChart = () => {
-  const handleSizeChange = () => {};
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        margin: 20,
-      }}
-    >
-      <div>
-        <Radio.Group onChange={handleSizeChange}>
-          <Radio.Button value="a">광고주</Radio.Button>
-          <Radio.Button value="b">매체</Radio.Button>
-        </Radio.Group>
-        &nbsp;&nbsp;
-        <Select
-          defaultValue={{ value: 10, label: "노출수" }}
-          className="selectBox"
-          options={[
-            { value: 10, label: "노출수" },
-            { value: 20, label: "클릭수" },
-            { value: 30, label: "CTR" },
-            { value: 40, label: "CPC" },
-          ]}
-          onChange={handleSizeChange}
-        />
-      </div>
-      <div>
-        <Radio.Group onChange={handleSizeChange}>
-          <Radio.Button value="day">일</Radio.Button>
-          <Radio.Button value="week">주</Radio.Button>
-          <Radio.Button value="month">월</Radio.Button>
-        </Radio.Group>
-      </div>
-    </div>
-  );
-};
-
 //차트 컬러(순서고정, max 10)
 const ChartComponent = () => {
   const colors = [
@@ -505,7 +791,7 @@ const ChartComponent = () => {
   //원하는 차트컴포넌트 출력
   return (
     <div>
-      <FilterChart />
+      <TwoWayBarChart />
       <LineChart colors={colors} />
       <NumberScoreCard />
       <div className="chartScoreCardContainer">
