@@ -792,10 +792,6 @@ const AreaChart = () => {
     yAxis: {
       type: "value",
       show: false,
-      axisLabel: {
-        showMaxLabel: true,
-        showMinLabel: true,
-      },
     },
     series: [
       {
