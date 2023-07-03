@@ -740,7 +740,44 @@ const AreaChart = () => {
   const data = [0, 145, 211, 301, 234, 290, 130, 100, 0];
   //   const datazero = [145, 211, 301, 234, 290, 130, 110];
 
+  const minValues = [];
+  const minValue = Math.min(...data);
+
+  const maxValues = [];
+  const maxValue = Math.max(...data);
+
+  data.forEach((value, index) => {
+    if (value === minValue) {
+      minValues.push(index);
+    }
+    if (value === maxValue) {
+      maxValues.push(index);
+    }
+  });
+
   const [options] = useState({
+    tooltip: {
+      backgroundColor: "#636465",
+      textStyle: {
+        color: "white",
+      },
+      trigger: "axis",
+      formatter: function (params) {
+        var tooltipContent = "";
+        params.forEach(function (item) {
+          var color = "#30c7e9";
+          var value = item.data;
+          tooltipContent +=
+            '<span style="display:inline-block;margin-right:5px;border-radius:10px;width:8px;height:8px;background-color:' +
+            color +
+            ';"></span>';
+
+          tooltipContent += value;
+        });
+        return tooltipContent;
+      },
+    },
+
     grid: {
       left: 0,
       right: 0,
@@ -755,6 +792,10 @@ const AreaChart = () => {
     yAxis: {
       type: "value",
       show: false,
+      axisLabel: {
+        showMaxLabel: true,
+        showMinLabel: true,
+      },
     },
     series: [
       {
@@ -766,6 +807,29 @@ const AreaChart = () => {
         color: "rgba(65,128,236,0.5)",
         symbol: "circle",
         symbolSize: 3,
+        markPoint: {
+          symbol: "circle",
+          symbolSize: 3.5,
+          label: {
+            show: false,
+          },
+
+          data: [
+            ...maxValues.map((index) => ({
+              type: "max",
+              name: "max",
+              itemStyle: { color: "green" },
+              coord: [index, maxValue],
+            })),
+            ...minValues.map((index) => ({
+              type: "min",
+              name: "min",
+              itemStyle: { color: "orange" },
+              symbolSize: 6,
+              coord: [index, minValue],
+            })),
+          ],
+        },
       },
     ],
   });
@@ -799,15 +863,15 @@ const ChartComponent = () => {
   //원하는 차트컴포넌트 출력
   return (
     <div>
-      <TwoWayBarChart />
-      <LineChart colors={colors} />
-      <NumberScoreCard />
       <div className="chartScoreCardContainer">
         <ChartScoreCard />
         <ChartScoreCard />
         <ChartScoreCard />
         <ChartScoreCard />
       </div>
+      <LineChart colors={colors} />
+      <NumberScoreCard />
+      <TwoWayBarChart />
       <PieChart colors={colors} />
       <DynamicChart colors={colors} />
       <AreaChart />
