@@ -36,20 +36,58 @@ const NumberScoreCard = () => {
 };
 
 /**
- ******************************* ScoreCart 차트형 ******************************
+ ******************************* ScoreCard 차트형 ******************************
  *
  * */
 
 const ChartScoreCard = () => {
-  const title = "총 광고비";
-  const value = "3,283,872";
-  const unit = "원";
-  const percent = 100;
+  const chartData = [
+    {
+      title: "총 광고비",
+      value: "3,283,872",
+      unit: "원",
+      percent: 100,
+      data: [0, 145, 211, 301, 234, 290, 130, 100, 0],
+    },
+    {
+      title: "총 매출액",
+      value: "7,554,857",
+      unit: "원",
+      percent: -2,
+      data: [0, 205, 211, 401, 234, 290, 130, 150, 0],
+    },
+    {
+      title: "ROAS(%)",
+      value: "612",
+      unit: "%",
+      percent: 80,
+      data: [0, 175, 211, 270, 234, 280, 130, 100, 0],
+    },
+    {
+      title: "CTR",
+      value: "542",
+      unit: "%",
+      percent: 120,
+      data: [0, 95, 211, 275, 234, 190, 275, 200, 0],
+    },
+  ];
+
+  return (
+    <div style={{ display: "flex" }}>
+      {chartData.map((data, index) => (
+        <ChartScoreCardData key={index} data={data} />
+      ))}
+    </div>
+  );
+};
+
+const ChartScoreCardData = ({ data }) => {
+  const { title, value, unit, percent, data: chartData } = data;
   const upAnddown = percent > 0 ? "▲" : "▼";
   const upAnddownColor = percent > 0 ? "#de481f" : "#4993e4";
 
   return (
-    <div className="chartScoreCardDiv">
+    <div className="chartScoreCardDiv" style={{ width: "25%" }}>
       <div className="chartScoreCard">
         <h3 className="CardTitle">{title}</h3>
         <div className="CardValueDiv">
@@ -66,7 +104,7 @@ const ChartScoreCard = () => {
           </span>
         </div>
         <div className="areaChartCard">
-          <AreaChart />
+          <AreaChart data={chartData} />
         </div>
       </div>
     </div>
@@ -735,10 +773,11 @@ const DynamicChart = ({ colors }) => {
  ******************************* AreaChart **********************************
  *
  * */
-const AreaChart = () => {
-  //실제 데이터
-  const data = [0, 145, 211, 301, 234, 290, 130, 100, 0];
-  //   const datazero = [145, 211, 301, 234, 290, 130, 110];
+const AreaChart = ({ data }) => {
+  // data가 undefined인 경우 빈 배열로 처리
+  if (!data) {
+    data = [];
+  }
 
   const minValues = [];
   const minValue = Math.min(...data);
@@ -809,7 +848,6 @@ const AreaChart = () => {
           label: {
             show: false,
           },
-
           data: [
             ...maxValues.map((index) => ({
               type: "max",
@@ -859,12 +897,7 @@ const ChartComponent = () => {
   //원하는 차트컴포넌트 출력
   return (
     <div>
-      <div className="chartScoreCardContainer">
-        <ChartScoreCard />
-        <ChartScoreCard />
-        <ChartScoreCard />
-        <ChartScoreCard />
-      </div>
+      <ChartScoreCard />
       <LineChart colors={colors} />
       <NumberScoreCard />
       <TwoWayBarChart />
