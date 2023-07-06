@@ -8,8 +8,9 @@ import {
 } from "@ant-design/icons";
 import ECharts from "echarts-for-react";
 
-const AreaLineChart = (colors) => {
-  const data = [2, 4, 4, 6, 8, 5, 6, 4, 8, 6, 6, 2];
+const AreaLineChart = ({ data }) => {
+  // const data = [2, 4, 4, 6, 8, 5, 6, 4, 8, 6, 6, 2];
+
   const minValues = [];
   const minValue = Math.min(...data);
 
@@ -94,7 +95,7 @@ const AreaLineChart = (colors) => {
       },
     ],
   };
-  return <ECharts className="ScoreChart" option={option} color={colors} />;
+  return <ECharts className="ScoreChart" option={option} />;
 };
 
 const ScoreCardChart = (colors) => {
@@ -256,7 +257,7 @@ const ScoreCardChart = (colors) => {
                 )
               </div>
               <div>
-                <AreaLineChart />
+                <AreaLineChart data={item.data} />
               </div>
             </Col>
           ))}
@@ -280,7 +281,7 @@ const ScoreCardChart = (colors) => {
                     )
                   </div>
                   <div>
-                    <AreaLineChart />
+                    <AreaLineChart data={item.data} />
                   </div>
                 </Col>
               ))
