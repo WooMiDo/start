@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ECharts from "echarts-for-react";
-import { Radio, Select } from "antd";
+import { Radio, Select, Row, Col, Checkbox, Dropdown } from "antd";
 import "./index.css";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import { CaretUpOutlined, CaretDownOutlined } from "@ant-design/icons";
 
 /**
  ******************************* ScoreCart 숫자형 ******************************
@@ -43,6 +44,7 @@ const NumberScoreCard = () => {
 const ChartScoreCard = () => {
   const chartData = [
     {
+      key: 0,
       title: "총 광고비",
       value: "3,283,872",
       unit: "원",
@@ -50,6 +52,7 @@ const ChartScoreCard = () => {
       data: [0, 145, 211, 301, 234, 290, 130, 100, 0],
     },
     {
+      key: 1,
       title: "총 매출액",
       value: "7,554,857",
       unit: "원",
@@ -57,6 +60,7 @@ const ChartScoreCard = () => {
       data: [0, 205, 211, 401, 234, 290, 130, 150, 0],
     },
     {
+      key: 2,
       title: "ROAS(%)",
       value: "612",
       unit: "%",
@@ -64,6 +68,7 @@ const ChartScoreCard = () => {
       data: [0, 175, 211, 270, 234, 280, 130, 100, 0],
     },
     {
+      key: 3,
       title: "CTR",
       value: "542",
       unit: "%",
@@ -74,7 +79,7 @@ const ChartScoreCard = () => {
 
   return (
     <div style={{ display: "flex" }}>
-      {chartData.map((data, index) => (
+      {chartData.map((data, record, index) => (
         <ChartScoreCardData key={index} data={data} />
       ))}
     </div>
@@ -82,9 +87,7 @@ const ChartScoreCard = () => {
 };
 
 const ChartScoreCardData = ({ data }) => {
-  const { title, value, unit, percent, data: chartData } = data;
-  const upAnddown = percent > 0 ? "▲" : "▼";
-  const upAnddownColor = percent > 0 ? "#de481f" : "#4993e4";
+  const { key, title, value, unit, percent, data: chartData } = data;
 
   return (
     <div className="chartScoreCardDiv" style={{ width: "25%" }}>
@@ -97,9 +100,11 @@ const ChartScoreCardData = ({ data }) => {
           </h1>
           <span className="percent">
             ( {percent}%{" "}
-            <span className="upAnddown" style={{ color: upAnddownColor }}>
-              &nbsp;{upAnddown}
-            </span>{" "}
+            {percent > 0 ? (
+              <CaretUpOutlined className="ArrowUp" />
+            ) : (
+              <CaretDownOutlined className="ArrowDown" />
+            )}
             )
           </span>
         </div>
@@ -774,7 +779,10 @@ const DynamicChart = ({ colors }) => {
  *
  * */
 const AreaChart = ({ data }) => {
-  // data가 undefined인 경우 빈 배열로 처리
+  //chartscorecard에 있는 data를 사용하지 않을 경우 데이터를 직접 입력해 줘야함
+  // const data = [0, 175, 211, 270, 234, 280, 130, 100, 0];
+
+  //chartscorecard에서 가져오는 data가 undefined인 경우 빈 배열로 처리
   if (!data) {
     data = [];
   }
@@ -898,12 +906,12 @@ const ChartComponent = () => {
   return (
     <div>
       <ChartScoreCard />
+      <AreaChart />
       <LineChart colors={colors} />
       <NumberScoreCard />
       <TwoWayBarChart />
       <PieChart colors={colors} />
       <DynamicChart colors={colors} />
-      <AreaChart />
       <BarChart />
     </div>
   );

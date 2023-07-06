@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { utils as XLSXUtils, writeFile } from "xlsx";
 import "./index.css";
+import { CaretUpOutlined, CaretDownOutlined } from "@ant-design/icons";
 
 /**
  ******************************* Type1 **********************************
@@ -12,6 +13,9 @@ import "./index.css";
  * */
 
 const Type1 = () => {
+  //광고비 percent
+  const adPercent = [100, -50, 200];
+
   //컬럼 명
   const columns = [
     {
@@ -28,6 +32,20 @@ const Type1 = () => {
     {
       title: "총 광고비",
       dataIndex: "totalAd",
+      render: (text, record, index) => {
+        const percent = adPercent[index];
+        return (
+          <span className="totalAd">
+            {text} ({percent}%&nbsp;
+            {percent > 0 ? (
+              <CaretUpOutlined className="ArrowUp" />
+            ) : (
+              <CaretDownOutlined className="ArrowDown" />
+            )}
+            )
+          </span>
+        );
+      },
     },
     {
       title: "총 광고비 (이전기간)",
@@ -75,7 +93,7 @@ const Type1 = () => {
   ];
 
   //홀수열과 짝수열에 클래스 이름 지정 (배경색 다르게 하기 위해서)
-  const rowClassName = (record, index) => {
+  const rowClassName = (index) => {
     return index % 2 === 0 ? "even-row" : "odd-row";
   };
 

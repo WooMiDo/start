@@ -1,12 +1,14 @@
 import React from "react";
 import ChartComponent from "./ChartComponent";
 import DataGridComponent from "./DataGridComponent";
+import ScoreCardChart from "./ChartScoreCard";
 
 function App() {
   return (
     <div className="App">
-      <ChartComponent />
       <DataGridComponent />
+      <ChartComponent />
+      <ScoreCardChart />
     </div>
   );
 }

@@ -46,6 +46,11 @@
   font-size: 20px;
 }
 
+/**
+ ******************************** ChartScoreCard *********************************
+ *
+ * */
+
 .chartScoreCardDiv {
   position: relative;
   padding-left: 0px !important;
@@ -341,4 +346,94 @@ h6 {
   font-family: "Rubik", sans-serif;
   margin: 10px 0;
   font-weight: 300;
+}
+
+/**
+ ******************************* ScoreCardChart *********************************
+ *
+ * */
+
+/* ScoreCardChart */
+.ScoreChartDiv {
+  height: 50px;
+  position: relative;
+  padding-left: 0px !important;
+  padding-right: 15px;
+  min-height: 1px;
+}
+.ScoreChart {
+  height: 100px !important;
+  vertical-align: top;
+  width: 202;
+}
+.ScoreChartCol {
+  width: 210px;
+  margin: 5px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  height: 178px;
+  user-select: none;
+}
+.ScoreChartRow {
+  display: flex;
+}
+.ScoreChartTitle {
+  margin: 0;
+  font-weight: 600 !important;
+  text-transform: none;
+  font-size: 15px;
+  line-height: 30px;
+}
+.ScoreChartValueDiv {
+  text-align: right;
+}
+.ScoreChartValue {
+  text-align: right;
+  font-size: 30px;
+  font-weight: 550 !important;
+}
+.ScoreChartPercent {
+  text-align: right;
+  font-size: 11px;
+  color: #898989;
+}
+.ArrowUp {
+  color: #de481f;
+}
+.ArrowDown {
+  color: #4993e4;
+}
+.ScoreChartAdd {
+  border: 1px solid #ccc;
+  margin: 5px;
+  height: 178px;
+}
+.ChartAdder {
+  color: blue;
+  font-size: xxx-large;
+}
+.ScoreChartAddContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.DropDownLayer {
+  border: 1px solid #ccc;
+  background-color: white;
+}
+.DropDownHeader {
+  padding: 5px;
+  background-color: #e1e3ec;
+  display: flex;
+  justify-content: space-between;
+}
+.ChartFilter {
+  width: 230px;
+  padding: 5px;
+}
+.DropDownCloseContainer {
+  display: flex;
+  align-items: center;
 }
