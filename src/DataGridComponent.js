@@ -12,7 +12,7 @@ import { CaretUpOutlined, CaretDownOutlined } from "@ant-design/icons";
  *
  * */
 
-const Type1 = () => {
+export const Type1 = () => {
   //광고비 percent
   const adPercent = [100, -50, 200];
 
@@ -115,7 +115,7 @@ const Type1 = () => {
  *
  * */
 
-const Type2 = () => {
+export const Type2 = () => {
   //컬럼 명
   const columns = [
     {
@@ -409,7 +409,7 @@ const Type2 = () => {
  *
  * */
 
-const Type3 = () => {
+export const Type3 = () => {
   //컬럼 명
   const columns = [
     Table.SELECTION_COLUMN, //체크박스
@@ -752,6 +752,124 @@ const SubTable = () => {
         columns={subTableColumns}
         dataSource={subTableData}
         pagination={false}
+      />
+    </div>
+  );
+};
+
+/**
+ ******************************* Type4 **********************************
+ *
+ * */
+
+export const Type4 = () => {
+  //시간 범위 생성
+  const generateTimeRange = () => {
+    const timeRange = [];
+    for (let i = 0; i < 24; i++) {
+      const Hour = i.toString().padStart(2, "0");
+      const time = `${Hour}:00 - ${Hour}:59`;
+      timeRange.push(time);
+    }
+    return timeRange;
+  };
+
+  //컬럼 명
+  const columns = [
+    {
+      title: "시간",
+      dataIndex: "time",
+      align: "center",
+      width: "20%",
+    },
+    {
+      title: "최근 30일 평균",
+      dataIndex: "average",
+      align: "right",
+      width: "20%",
+    },
+    {
+      title: "페이지뷰",
+      dataIndex: "pageView",
+      align: "right",
+      width: "20%",
+    },
+    {
+      title: "증감",
+      dataIndex: "variance",
+      render: (text) => {
+        return (
+          <>
+            {text}{" "}
+            {text >= 0 ? (
+              <CaretUpOutlined className="ArrowUp" />
+            ) : (
+              <CaretDownOutlined className="ArrowDown" />
+            )}
+          </>
+        );
+      },
+      align: "right",
+      width: "20%",
+    },
+    {
+      title: "비율%",
+      dataIndex: "percentage",
+      render: (text) => {
+        return text + " %";
+      },
+      align: "right",
+      width: "20%",
+    },
+  ];
+
+  // 시간별 데이터 생성
+  const timeRange = generateTimeRange();
+  const data = [];
+
+  for (let i = 0; i < timeRange.length; i++) {
+    const time = timeRange[i];
+    const average = `${i}`;
+    const pageView = `${i + 1}`;
+    const variance = `${-5 + i}`;
+    const percentage = `${i}`;
+
+    data.push({
+      key: `${i + 1}`,
+      time,
+      average,
+      pageView,
+      variance,
+      percentage,
+    });
+  }
+
+  const totalpageView = data.reduce(
+    (sum, row) => sum + parseInt(row.pageView),
+    0
+  );
+
+  return (
+    <div className="type4Div">
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        bordered={false}
+        footer={() => (
+          <tfoot>
+            <tr className="total-row">
+              <td colSpan={2} style={{ width: "40%", textAlign: "center" }}>
+                <b>Total:</b>
+              </td>
+              <td style={{ width: "20%", textAlign: "right" }}>
+                <b>{totalpageView.toLocaleString()}</b>
+              </td>
+              <td colSpan={2} style={{ width: "40%" }}></td>
+              <td style={{ padding: 0 }}></td>
+            </tr>
+          </tfoot>
+        )}
       />
     </div>
   );

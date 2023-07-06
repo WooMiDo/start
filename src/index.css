@@ -30,7 +30,7 @@
 .scorecard {
   text-align: center;
   font-size: 12px;
-  margin: 20px;
+  width: 100%;
   border-collapse: collapse;
 }
 
@@ -38,7 +38,6 @@
   background-color: #f3f3f7;
   border: 1px solid #ccc;
   padding: 10px;
-  width: 200px;
 }
 
 .scorecard .emphasis {
@@ -121,11 +120,6 @@
  *
  * */
 
-.type1Div {
-  margin: 20px;
-  padding: 20px;
-}
-
 .type1Div .basicBtn {
   background-color: white;
   border: 1px solid #ccc;
@@ -143,11 +137,6 @@
  ************************************* type2 ****************************************
  *
  * */
-
-.type2Div {
-  margin: 20px;
-  padding: 20px;
-}
 
 .type2Div .deleteBtn {
   background-color: #f33155;
@@ -224,8 +213,6 @@
  *
  * */
 .type3Div {
-  margin: 20px;
-  padding: 20px;
   font-size: 12px;
   font-weight: bold;
 }
@@ -273,6 +260,38 @@ td {
   padding: 0;
   background-color: white;
   text-align: right;
+}
+/**
+ ************************************* type4 ****************************************
+ *
+ * */
+
+.type4Div .ant-table-thead .ant-table-cell {
+  background-color: #f4f4f4;
+  border-top: #cccccc 1px solid;
+  border-bottom: #cccccc 1px solid;
+}
+
+.type4Div .ant-table-content {
+  border-left: none;
+  border-right: none;
+}
+
+.type4Div .ant-table-wrapper .ant-table-cell {
+  padding: 8px 4px;
+}
+
+.type4Div .ant-table-footer {
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.type4Div .ant-table-footer td {
+  padding: 8px 4px;
+}
+
+.type4Div tr td {
+  border-right: 1px solid #f4f4f4;
 }
 
 /**
@@ -436,4 +455,23 @@ h6 {
 .DropDownCloseContainer {
   display: flex;
   align-items: center;
+}
+
+/**
+ ******************************* PageViewFilter *********************************
+ *
+ * */
+
+.pageViewFilterDiv {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: left;
+  font-family: "gulim", "gulimche";
+}
+
+.ant-select-selector .ant-select-selection-item {
+  font-size: 12px !important;
+  font-weight: bold !important;
+  text-align: left !important;
+  font-family: "gulim", "gulimche";
 }

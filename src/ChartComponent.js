@@ -7,25 +7,51 @@ import HighchartsReact from "highcharts-react-official";
 import { CaretUpOutlined, CaretDownOutlined } from "@ant-design/icons";
 
 /**
- ******************************* ScoreCart 숫자형 ******************************
+ ******************************* ScoreCard 숫자형 ******************************
  *
  * */
 
-const NumberScoreCard = () => {
+export const NumberScoreCard = ({ group }) => {
   const data = [
-    { id: 1, name: "페이지뷰", value: 32 },
-    { id: 2, name: "전체 방문수", value: 27 },
-    { id: 3, name: "북마크/직접입력 방문수", value: 17 },
-    { id: 4, name: "외부유입 방문 랜딩페이지 통과율", value: "44.44%" },
-    { id: 5, name: "전체 반송수", value: 22 },
+    { id: 1, group: "1", name: "페이지뷰", value: 90 },
+    { id: 2, group: "1", name: "전체 방문수", value: 73 },
+    { id: 3, group: "1", name: "순수 방문자수(일 순수)", value: 72 },
+    { id: 4, group: "1", name: "신규방문자 비율", value: "91.78%" },
+    { id: 5, group: "1", name: "전체 반송수", value: 63 },
+
+    { id: 6, group: "2", name: "페이지뷰", value: 10 },
+    { id: 7, group: "2", name: "전체 방문수", value: 63 },
+    { id: 8, group: "2", name: "순수 방문자수(일 순수)", value: 42 },
+    { id: 9, group: "2", name: "신규방문자 비율", value: "11.78%" },
+    { id: 10, group: "2", name: "전체 반송수", value: 33 },
+
+    { id: 11, group: "3", name: "페이지뷰", value: 44 },
+    { id: 12, group: "3", name: "전체 방문수", value: 63 },
+    { id: 13, group: "3", name: "순수 방문자수(일 순수)", value: 12 },
+    { id: 14, group: "3", name: "신규방문자 비율", value: "48.27%" },
+    { id: 15, group: "3", name: "전체 반송수", value: 13 },
+
+    { id: 16, group: "4", name: "페이지뷰", value: 24 },
+    { id: 17, group: "4", name: "전체 방문수", value: 53 },
+    { id: 18, group: "4", name: "순수 방문자수(일 순수)", value: 60 },
+    { id: 19, group: "4", name: "신규방문자 비율", value: "77.14%" },
+    { id: 20, group: "4", name: "전체 반송수", value: 56 },
   ];
+
+  const filteredData = data.filter((item) => item.group === group);
+  const dataLength = data.length;
+  const cardNameWidth = `${100 / dataLength}%`;
 
   return (
     <table className="scorecard">
       <tbody>
         <tr>
-          {data.map((item) => (
-            <td key={item.id} className="cardName">
+          {filteredData.map((item) => (
+            <td
+              key={item.id}
+              className="cardName"
+              style={{ width: cardNameWidth }}
+            >
               {item.name}
               <br /> <strong className="emphasis">{item.value}</strong>
             </td>
@@ -41,7 +67,7 @@ const NumberScoreCard = () => {
  *
  * */
 
-const ChartScoreCard = () => {
+export const ChartScoreCard = () => {
   const chartData = [
     {
       key: 0,
@@ -121,7 +147,7 @@ const ChartScoreCardData = ({ data }) => {
  *
  * */
 
-const LineChart = ({ colors }) => {
+export const LineChart = ({ colors }) => {
   //선택된 기간에 대한 x축 data값 생성(일, 주, 월)
   const generateDates = (start, end, interval) => {
     const dates = [];
@@ -396,7 +422,7 @@ const LineChart = ({ colors }) => {
  *
  * */
 
-const PieChart = ({ colors }) => {
+export const PieChart = ({ colors }) => {
   //실제 데이터 (이름, 값)
   const data = [
     { value: 1048, name: "서울특별시" },
@@ -489,7 +515,7 @@ const PieChart = ({ colors }) => {
  *
  * */
 
-const BarChart = () => {
+export const BarChart = () => {
   //실제 데이터 (이름, 값)
   const data = [
     { value: 21, name: "Direct" },
@@ -541,7 +567,7 @@ const BarChart = () => {
  *
  * */
 
-const TwoWayBarChart = () => {
+export const TwoWayBarChart = () => {
   //연령
   const categories = [
     "10대 이하",
@@ -666,35 +692,27 @@ const TwoWayBarChart = () => {
  ******************************* DynamicChart **********************************
  *
  * */
-const DynamicChart = ({ colors }) => {
+export const DynamicChart = ({ colors }) => {
   //범례
-  const category = ["Bardata", "Linedata"];
+  const category = ["측정값", "평균값"];
 
   //x축 데이터
-  const data = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+  const data = [];
+  for (let i = 0; i < 24; i++) {
+    data.push(i);
+  }
 
   //barchart로 출력될 데이터
-  const bardata = [
-    2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3,
-  ];
+  const bardata = [];
+  for (let i = 0; i < 24; i++) {
+    bardata.push(i + 5);
+  }
 
   //linechart로 출력될 데이터
-  const linedata = [
-    2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2,
-  ];
+  const linedata = [];
+  for (let i = 0; i < 24; i++) {
+    linedata.push(i + 6);
+  }
 
   const [options] = useState({
     grid: {
@@ -778,7 +796,7 @@ const DynamicChart = ({ colors }) => {
  ******************************* AreaChart **********************************
  *
  * */
-const AreaChart = ({ data }) => {
+export const AreaChart = ({ data }) => {
   //chartscorecard에 있는 data를 사용하지 않을 경우 데이터를 직접 입력해 줘야함
   // const data = [0, 175, 211, 270, 234, 280, 130, 100, 0];
 
