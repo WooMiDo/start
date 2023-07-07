@@ -7,9 +7,9 @@ import LoggerPageView from "./LoggerPageView";
 function App() {
   return (
     <div className="App">
-      <LoggerPageView />
+      {/* <GnbLnb /> */}
       {/* <DataGridComponent /> */}
-      {/* <ChartComponent /> */}
+      <ChartComponent />
       {/* <ScoreCardChart /> */}
     </div>
   );

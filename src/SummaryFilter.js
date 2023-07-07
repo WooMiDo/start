@@ -7,9 +7,11 @@ import { SettingOutlined } from "@ant-design/icons";
 const TransferFilter = () => {
   const [mockData, setMockData] = useState([]);
   const [targetKeys, setTargetKeys] = useState([]);
+
   const getMock = () => {
     const tempTargetKeys = [];
     const tempMockData = [];
+
     for (let i = 0; i < 10; i++) {
       const data = {
         key: i.toString(),
@@ -39,20 +41,23 @@ const TransferFilter = () => {
     );
     return {
       label: customLabel,
-      // for displayed item
-      value: item.title, // for title and filter matching
+      value: item.description,
     };
   };
 
   return (
-    <div style={{ border: "#cccccc 1px solid" }}>
-      <div>충성도 셀편집</div>
-      <div>
+    <div className="TransferFilterDiv">
+      <div className="CellEditTitle">충성도 셀편집</div>
+      <div className="CellEditDesc">
+        <span>요약 대시보드 항목선택 및 추가</span>
+        <span>요약 대시보드 항목순서 설정</span>
+      </div>
+      <div className="TransferDiv">
         <Transfer
           dataSource={mockData}
           listStyle={{
             width: 300,
-            height: 300,
+            height: 250,
           }}
           targetKeys={targetKeys}
           onChange={handleChange}
@@ -60,8 +65,9 @@ const TransferFilter = () => {
           operations={["항목 추가", "항목 삭제"]}
         />
       </div>
-      <div>
+      <div className="TransferBtn">
         <button>기본값 복원</button>
+        &nbsp;
         <button>저장하기</button>
       </div>
     </div>

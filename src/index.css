@@ -475,3 +475,35 @@ h6 {
   text-align: left !important;
   font-family: "gulim", "gulimche";
 }
+
+/**
+ ********************************* SummaryFilter ********************************
+ *
+ * */
+
+.TransferFilterDiv {
+  border: #cccccc 1px solid;
+  width: 710px;
+  padding: 15px;
+  font-size: 12px;
+}
+
+.TransferFilterDiv .TransferDiv {
+  display: flex;
+  justify-content: center;
+}
+
+.TransferFilterDiv .CellEditTitle {
+  background-color: #ccc;
+}
+
+.TransferFilterDiv .CellEditDesc {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.TransferFilterDiv .TransferBtn {
+  margin-top: 15px;
+  text-align: center;
+}
